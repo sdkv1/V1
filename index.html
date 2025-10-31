@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+
+<title>BitShared PWA</title>
+<style>
+body { font-family: Arial; text-align:center; padding:20px; }
+button {
+  padding:12px 20px; background:#4CAF50; color:white;
+  border:none; border-radius:8px; cursor:pointer; font-size:16px;
+}
+.small { font-size:14px; color:#555; margin-top:10px; }
+</style>
+</head>
+
+<body>
+
+<h2>BitShared PWA 🚀</h2>
+<p>Full Auto Update + Offline Mode</p>
+
+<button id="installBtn" style="display:none">Install Aplikasi</button>
+<p class="small" id="versionText"></p>
+
+<script>
+// Ambil versi dari manifest
+(async () => {
+  const manifest = await fetch("manifest.json").then(r => r.json());
+  document.getElementById("versionText").textContent = "Versi: " + manifest.version;
+})();
+
+// Tombol install PWA
+let deferredPrompt;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById("installBtn").style.display = "inline-block";
+});
+
+document.getElementById("installBtn").onclick = async () => {
+  document.getElementById("installBtn").style.display = "none";
+  deferredPrompt.prompt();
+};
+
+// Register service worker
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+
+</body>
+</html>
