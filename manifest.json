@@ -1,7 +1,7 @@
 {
   "name": "BitShared App",
   "short_name": "BitShared",
-  "start_url": "/pwa/index.html",
+  "start_url": "/V1/index.html",
   "display": "standalone",
   "theme_color": "#4CAF50",
   "background_color": "#ffffff",
