@@ -1,13 +1,14 @@
 const CACHE = "bs-pwa-" + Date.now();
-const OFFLINE = "/pwa/index.html";
+const OFFLINE = "/V1/index.html";
 
 self.addEventListener("install", e => {
   self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE).then(c => c.addAll([
-      "/pwa/",
-      "/pwa/index.html",
-      "/pwa/manifest.json"
+      "/V1/",
+      "/V1/index.html",
+      "/V1/manifest.json",
+      "/V1/bitshared.png"
     ]))
   );
 });
