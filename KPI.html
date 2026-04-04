@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff Management v1 - Full CRUD KPI</title>
+    <title>Staff Systems v1 - Multi Shiff KPI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
@@ -32,23 +32,22 @@
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <div>
             <h2 class="text-2xl font-black neon-text uppercase tracking-tighter italic">Staff Systems <span class="text-white">v1</span></h2>
-            <p class="text-[10px] text-slate-500 font-mono mt-1">> NODES_DETECTED: <span x-text="staffs.length"></span> | CTRL_ROOM_READY</p>
+            <p class="text-[10px] text-slate-500 font-mono mt-1">> DATABASE_ACTIVE | <span x-text="staffs.length"></span> NODES CONNECTED</p>
         </div>
         
-        <div class="flex flex-wrap justify-center gap-3 w-full md:w-auto">
+        <div class="flex gap-3">
             <button @click="getStaff()" class="p-3 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 transition-all shadow-xl" :disabled="loading">
                 <svg :class="loading ? 'animate-spin' : ''" class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
             </button>
-            
             <button @click="openModal('add')" class="px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-black rounded-xl transition-all shadow-lg shadow-green-900/30 text-xs tracking-widest uppercase">
-                + Add New Node
+                + Add Staff
             </button>
         </div>
     </div>
 
     <div class="glass rounded-3xl shadow-2xl border border-white/10 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left table-fixed min-w-[900px] border-collapse">
+            <table class="w-full text-left table-fixed min-w-[900px]">
                 <thead>
                     <tr class="bg-slate-800/80 text-slate-400 text-[10px] uppercase font-black tracking-[0.2em] border-b border-white/5">
                         <th class="px-8 py-5 w-[100px]">Profile</th>
@@ -83,11 +82,16 @@
                             
                             <td class="px-4 py-5">
                                 <div class="font-bold text-slate-100 text-sm" x-text="item.nama || item.Nama"></div>
-                                <div class="text-[9px] text-slate-500 font-mono italic" x-text="'ID: ' + (item.id || item.Id)"></div>
+                                <div class="text-[9px] text-slate-500 font-mono italic" x-text="'UID-' + (item.id || item.Id)"></div>
                             </td>
                             
                             <td class="px-8 py-5 text-center">
-                                <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-900/50 px-2 py-1 rounded" x-text="item.shiff || item.Shiff || 'Siang'"></span>
+                                <span class="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded border shadow-inner"
+                                      :class="{
+                                          'text-red-400 border-red-500/20 bg-red-500/5': (item.shiff || item.Shiff) === 'Libur',
+                                          'text-slate-300 border-white/5 bg-slate-900/50': (item.shiff || item.Shiff) !== 'Libur'
+                                      }"
+                                      x-text="item.shiff || item.Shiff || 'Siang'"></span>
                             </td>
                             
                             <td class="px-8 py-5 text-center">
@@ -106,7 +110,7 @@
                             </td>
 
                             <td class="px-8 py-5 text-right relative" x-data="{ menuOpen: false }">
-                                <button @click="menuOpen = !menuOpen" @click.away="menuOpen = false" class="p-2 hover:bg-slate-700/50 rounded-lg transition-colors">
+                                <button @click="menuOpen = !menuOpen" @click.away="menuOpen = false" class="p-2 hover:bg-slate-700/50 rounded-lg">
                                     <svg class="w-5 h-5 text-slate-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>
                                 </button>
                                 <div x-show="menuOpen" x-cloak class="absolute right-12 top-12 w-28 glass border border-white/20 rounded-xl shadow-2xl z-50 overflow-hidden">
@@ -119,68 +123,57 @@
                 </tbody>
             </table>
         </div>
-
-        <div class="px-8 py-4 border-t border-white/5 bg-slate-900/40 flex justify-between items-center">
-            <span class="text-[10px] font-mono text-slate-500 uppercase font-black tracking-widest">Page <span class="text-white" x-text="currentPage"></span> / <span x-text="totalPages"></span></span>
-            
-            <div class="flex gap-2">
-                 <button @click="currentPage--" :disabled="currentPage === 1" class="w-9 h-9 flex items-center justify-center bg-slate-800 rounded-lg border border-slate-700 disabled:opacity-20 hover:bg-slate-700">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                </button>
-                <button @click="currentPage++" :disabled="currentPage === totalPages" class="w-9 h-9 flex items-center justify-center bg-slate-800 rounded-lg border border-slate-700 disabled:opacity-20 hover:bg-slate-700">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </button>
-            </div>
-        </div>
     </div>
 
     <div x-show="showModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md" x-transition x-cloak>
         <div class="glass w-full max-w-md rounded-3xl shadow-2xl overflow-hidden shadow-black">
             <div class="p-6 border-b border-white/10 flex justify-between items-center bg-slate-900/50">
-                <h3 class="text-sm font-black neon-text uppercase tracking-widest" x-text="mode === 'edit' ? 'Update Node Data' : 'Initialize New Node'"></h3>
+                <h3 class="text-sm font-black neon-text uppercase tracking-widest" x-text="mode === 'edit' ? 'Update Staff Node' : 'Register New Node'"></h3>
                 <button @click="showModal = false" class="w-8 h-8 flex items-center justify-center bg-slate-800 rounded-full text-slate-400">&times;</button>
             </div>
             <form @submit.prevent="saveStaff" class="p-6 space-y-4">
                 <div>
                     <label class="block text-[9px] uppercase font-black text-slate-500 mb-1 tracking-widest">Full Name</label>
-                    <input type="text" x-model="form.nama" required class="w-full input-dark rounded-xl px-4 py-2.5 text-sm font-bold focus:border-green-500/50 outline-none">
+                    <input type="text" x-model="form.nama" required class="w-full input-dark rounded-xl px-4 py-2.5 text-sm font-bold outline-none focus:border-green-500/40">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[9px] uppercase font-black text-slate-500 mb-1 tracking-widest">Position</label>
-                        <select x-model="form.posisi" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold uppercase cursor-pointer">
-                            <option value="Teknisi">Teknisi</option>
-                            <option value="Admin">Admin</option>
-                            <option value="Frontliner">Frontliner</option>
-                            <option value="Kepala Cabang">KACAB</option>
+                        <label class="block text-[9px] uppercase font-black text-slate-500 mb-1 tracking-widest">Shiff Plan</label>
+                        <select x-model="form.shiff" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold uppercase cursor-pointer">
+                            <option value="Libur">Libur</option>
+                            <option value="Pagi">Pagi</option>
+                            <option value="Middle">Middle</option>
+                            <option value="Siang">Siang</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[9px] uppercase font-black text-slate-500 mb-1 tracking-widest">Shiff</label>
-                        <select x-model="form.shiff" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold uppercase cursor-pointer">
-                            <option value="Siang">Siang</option>
-                            <option value="Malam">Malam</option>
+                        <label class="block text-[9px] uppercase font-black text-slate-500 mb-1 tracking-widest">Specialization</label>
+                        <select x-model="form.job" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold uppercase cursor-pointer">
+                            <option value="Mesin">Mesin</option>
+                            <option value="Interface">Interface</option>
+                            <option value="Software">Software</option>
+                            <option value="Aksesoris">Aksesoris</option>
                         </select>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-[9px] uppercase font-black text-slate-500 mb-1 tracking-widest">Specialization (Job)</label>
-                    <select x-model="form.job" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold uppercase cursor-pointer">
-                        <option value="Mesin">Mesin (Green)</option>
-                        <option value="Interface">Interface (Orange)</option>
-                        <option value="Software">Software</option>
-                        <option value="Aksesoris">Aksesoris</option>
+                    <label class="block text-[9px] uppercase font-black text-slate-500 mb-1 tracking-widest">Position</label>
+                    <select x-model="form.posisi" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold uppercase">
+                        <option value="Teknisi">Teknisi</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Frontliner">Frontliner</option>
+                        <option value="Kepala Cabang">KACAB</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-[9px] uppercase font-black text-slate-500 mb-1 tracking-widest">Outlet Name</label>
-                    <input type="text" x-model="form.outlet" required class="w-full input-dark rounded-xl px-4 py-2.5 text-sm font-bold focus:border-green-500/50 outline-none">
+                    <input type="text" x-model="form.outlet" required class="w-full input-dark rounded-xl px-4 py-2.5 text-sm font-bold">
                 </div>
                 
                 <div class="flex justify-end gap-3 pt-4">
                     <button type="button" @click="showModal = false" class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Cancel</button>
                     <button type="submit" class="bg-green-600 hover:bg-green-500 px-8 py-2.5 rounded-xl text-[10px] font-black text-white uppercase tracking-widest shadow-lg shadow-green-900/40" :disabled="loading">
-                        <span x-text="loading ? 'Processing...' : 'Sync Record'"></span>
+                        <span x-text="loading ? 'Syncing...' : 'Sync Record'"></span>
                     </button>
                 </div>
             </form>
@@ -251,7 +244,7 @@
             },
 
             async deleteStaff(id) {
-                if (!confirm('Erase this node from database?')) return;
+                if (!confirm('Erase this record?')) return;
                 const res = await this.call({ method: 'delete', table: 'staff', params: [id] });
                 if (res) await this.getStaff();
             }
