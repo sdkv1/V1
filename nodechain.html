@@ -41,14 +41,20 @@
             </div>
         </div>
 
-<div class="bg-slate-50 px-5 py-2.5 rounded-2xl border border-orange-100 shadow-sm flex flex-col items-center justify-center min-w-[160px]">
-    <p class="text-[7px] text-orange-400 font-black uppercase tracking-[0.3em] mb-1">Live_Sync</p>
+<div class="flex items-center group">
+    <div class="bg-slate-100 px-4 py-2 rounded-l-2xl border border-orange-100 border-r-0 flex flex-col justify-center items-end min-w-[100px]">
+        <span class="text-[7px] text-orange-500 font-black uppercase tracking-[0.2em] mb-0.5">System_Date</span>
+        <span class="text-[11px] font-mono font-black text-slate-500 leading-none" x-text="liveDate">05 APR 2026</span>
+    </div>
     
-    <p class="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-[0.1em]" x-text="liveDate">05 APR 2026</p>
-    
-    <div class="flex items-baseline gap-0.5">
-        <h2 class="text-xl font-mono font-black tracking-tight text-slate-800" x-text="liveTime">00:00</h2>
-        <span class="text-xs font-mono font-bold text-orange-500 w-[20px]" x-text="liveSeconds">:00</span>
+    <div class="bg-white px-5 py-3 rounded-2xl -ml-2 shadow-xl border border-orange-200 flex flex-col justify-center items-start min-w-[120px] relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-8 h-8 bg-orange-50 rounded-full -mr-4 -mt-4 opacity-50"></div>
+        
+        <span class="text-[7px] text-slate-400 font-black uppercase tracking-[0.2em] mb-1">Live_Time_Sync</span>
+        <div class="flex items-baseline leading-none">
+            <span class="text-2xl font-mono font-black text-slate-800 tracking-tighter" x-text="liveTime">10:30</span>
+            <span class="text-xs font-mono font-bold text-orange-500 ml-1" x-text="liveSeconds">:00</span>
+        </div>
     </div>
 </div>
 
