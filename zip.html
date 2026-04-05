@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NODE CHAIN - Vertical Stack</title>
+    <title>NODE CHAIN - Live Interface</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
@@ -13,6 +13,7 @@
             color: #f8fafc; 
             font-family: 'Inter', sans-serif;
             background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 80%);
+            overflow-x: hidden;
         }
         .glass { 
             background: rgba(15, 23, 42, 0.6);
@@ -26,12 +27,15 @@
 </head>
 <body class="p-2 md:p-4 min-h-screen bg-grid">
 
-<div class="max-w-[800px] mx-auto w-full" x-data="nodeChain()" x-init="init()">
+<div class="max-w-[1000px] mx-auto w-full" x-data="nodeChain()" x-init="init()">
     
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-slate-900/40 p-5 rounded-2xl border border-white/5 shadow-2xl glass">
         <div class="text-center md:text-left">
             <h1 class="text-xl font-black tracking-[0.2em] uppercase italic neon-text">NODE <span class="text-white">CHAIN</span></h1>
-            <p class="text-[8px] text-slate-500 font-mono uppercase tracking-[0.3em] mt-1">Pulse_Sync: 1s</p>
+            <div class="flex items-center gap-2 mt-1 justify-center md:justify-start">
+                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping"></span>
+                <p class="text-[8px] text-slate-500 font-mono uppercase tracking-[0.3em]">Protocol_Active // Pulse: 1s</p>
+            </div>
         </div>
 
         <div class="bg-slate-950/80 px-8 py-3 rounded-2xl border border-blue-500/20 shadow-inner">
@@ -40,44 +44,46 @@
         </div>
         
         <div class="hidden lg:block text-right">
-            <p class="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-tighter animate-pulse">● Live_Stream</p>
+            <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Network_Status</p>
+            <p class="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-tighter">Synced_Live</p>
         </div>
     </div>
 
     <div class="glass rounded-2xl shadow-2xl border border-white/10 overflow-hidden relative">
-        <div class="absolute top-0 left-0 h-[1px] bg-blue-400 transition-all duration-1000 ease-linear" :style="'width: ' + pulseWidth + '%'"></div>
+        <div class="absolute top-0 left-0 h-[1px] bg-blue-500 transition-all duration-1000 ease-linear" :style="'width: ' + pulseWidth + '%'"></div>
 
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-900/80 text-slate-500 text-[8px] uppercase font-black tracking-widest border-b border-white/5">
-                        <th class="px-6 py-4">Transaction_Payload</th>
-                        <th class="px-6 py-4 text-right">Node</th>
+                        <th class="px-5 py-3 w-1/2">Data_Packet (Transaction & Antrian)</th>
+                        <th class="px-5 py-3">Timestamp</th>
+                        <th class="px-5 py-3 text-right">Node_Origin</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
                     <template x-for="trans in transactions" :key="trans.id">
-                        <tr class="hover:bg-blue-600/[0.05] transition-all group border-l-4 border-l-transparent hover:border-l-blue-500">
+                        <tr class="hover:bg-blue-600/[0.07] transition-all group">
                             
-                            <td class="px-6 py-4">
-                                <div class="flex flex-col gap-1.5">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-1.5 h-1.5 rounded-full bg-slate-600 group-hover:bg-blue-500 transition-colors"></div>
-                                        <span class="font-bold text-slate-100 text-[13px] font-mono tracking-tight group-hover:text-white" x-text="trans.invoice_service"></span>
-                                    </div>
+                            <td class="px-5 py-3">
+                                <div class="flex flex-col gap-1">
+                                    <span class="font-bold text-slate-200 text-[12px] font-mono tracking-tight group-hover:text-white" x-text="trans.invoice_service"></span>
                                     
-                                    <div class="flex items-center gap-2 ml-3.5">
-                                        <span class="text-[10px] font-black bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded border border-blue-500/20 font-mono tracking-[0.1em]" x-text="'ANTRIAN: ' + trans.nomor_antrian"></span>
-                                        <span class="text-[9px] text-slate-500 font-mono" x-text="trans.tanggal_antrian"></span>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_5px_#3b82f6]"></div>
+                                        <span class="text-[9px] font-mono font-black text-blue-400 tracking-[0.1em]" x-text="trans.nomor_antrian"></span>
+                                        <span class="text-[7px] text-slate-700 font-mono uppercase" x-text="'Hash:' + trans.id"></span>
                                     </div>
-
-                                    <span class="text-[7px] text-slate-700 font-mono uppercase ml-3.5" x-text="'Hash_Auth:' + trans.id"></span>
                                 </div>
                             </td>
 
-                            <td class="px-6 py-4 text-right align-top">
-                                <div class="inline-block bg-slate-900/80 px-3 py-1 rounded-lg border border-white/5 group-hover:border-blue-500/30 transition-all">
-                                    <span class="text-[9px] text-slate-400 font-black uppercase tracking-tighter" x-text="'NID_' + trans.id_cabang_erzap"></span>
+                            <td class="px-5 py-3">
+                                <span class="text-slate-400 text-[10px] font-mono" x-text="trans.tanggal_antrian"></span>
+                            </td>
+
+                            <td class="px-5 py-3 text-right">
+                                <div class="inline-block bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
+                                    <span class="text-[8px] text-blue-300 font-black uppercase tracking-tighter" x-text="'NODE_' + trans.id_cabang_erzap"></span>
                                 </div>
                             </td>
                         </tr>
@@ -87,12 +93,9 @@
         </div>
     </div>
 
-    <div class="mt-4 flex justify-between items-center px-2 opacity-30 font-mono text-[8px]">
-        <p class="uppercase tracking-[0.5em]">NodeChain_Stream_Active</p>
-        <div class="flex gap-4">
-            <span>SYNC_POOL: 24</span>
-            <span>FREQ: 1HZ</span>
-        </div>
+    <div class="mt-4 flex justify-between items-center px-2 opacity-30">
+        <p class="text-[8px] text-slate-500 font-black uppercase tracking-[0.5em]">NodeChain_Stream_v1.1</p>
+        <span class="text-[8px] text-slate-500 font-mono">LATENCY: 12ms</span>
     </div>
 </div>
 
@@ -127,7 +130,7 @@
                     if (res && res.data) {
                         this.transactions = Array.isArray(res.data) ? res.data : [res.data];
                     }
-                } catch (err) { console.error('Sync Error'); }
+                } catch (err) { console.error('Sync error'); }
             }
         }
     }
