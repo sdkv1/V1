@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NODE CHAIN - Staff Registry V3</title>
+    <title>NODE CHAIN - Staff Registry V3.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
@@ -28,11 +28,13 @@
             border: 1px solid rgba(255, 255, 255, 0.1) !important; 
             color: #fff !important;
         }
-        input:focus, select:focus { border-color: #3b82f6 !important; outline: none; box-shadow: 0 0 15px rgba(59, 130, 246, 0.15); }
-        
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .quick-select {
+            background: transparent !important;
+            border: none !important;
+            cursor: pointer;
+            padding: 2px 4px;
+            font-weight: 800;
+        }
     </style>
 </head>
 <body class="p-2 md:p-6 min-h-screen bg-grid" x-data="staffApp()" x-init="init()">
@@ -42,13 +44,7 @@
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-slate-900/40 p-6 rounded-2xl border border-white/5 shadow-2xl glass">
         <div>
             <h1 class="text-xl font-black tracking-[0.2em] uppercase italic neon-text">STAFF <span class="text-white">NODE</span></h1>
-            <div class="flex items-center gap-2 mt-1">
-                <span class="relative flex h-2 w-2">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                </span>
-                <p class="text-[9px] text-blue-400 font-mono uppercase tracking-[0.2em]">Registry_System // Live_Update</p>
-            </div>
+            <p class="text-[9px] text-blue-400 font-mono uppercase tracking-[0.2em] mt-1">Registry_V3.1 // Quick_Sync</p>
         </div>
 
         <button @click="openModal('add')" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20 active:scale-95">
@@ -56,83 +52,66 @@
         </button>
     </div>
 
-    <div class="glass rounded-2xl shadow-2xl border border-white/10 overflow-hidden relative">
-        <div class="overflow-x-auto custom-scrollbar">
+    <div class="glass rounded-2xl shadow-2xl border border-white/10 overflow-hidden">
+        <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-900/80 text-slate-500 text-[8px] uppercase font-black tracking-widest border-b border-white/5">
-                        <th class="px-6 py-5">Personnel & Role</th>
-                        <th class="px-6 py-5">Assignment / Job</th>
+                        <th class="px-6 py-5 text-blue-400">Personnel & Role</th>
+                        <th class="px-6 py-5">Shift (Quick)</th>
                         <th class="px-6 py-5">Node / Outlet</th>
-                        <th class="px-6 py-5 text-center">Status Control</th>
-                        <th class="px-6 py-5 text-right">Actions</th>
+                        <th class="px-6 py-5 text-center">Status (Quick)</th>
+                        <th class="px-6 py-5 text-right">Settings</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
                     <template x-for="staff in pagedStaff()" :key="staff.id">
-                        <tr class="hover:bg-blue-600/[0.04] transition-all group border-l-2 border-l-transparent hover:border-l-blue-500">
+                        <tr class="hover:bg-blue-600/[0.03] transition-all group border-l-2 border-l-transparent hover:border-l-blue-500">
                             <td class="px-6 py-4">
                                 <div class="flex flex-col">
                                     <span class="font-bold text-slate-100 text-[13px] tracking-tight group-hover:text-blue-200" x-text="staff.nama"></span>
-                                    <div class="flex items-center gap-2 mt-0.5">
-                                        <span class="text-[9px] text-blue-400 font-black uppercase tracking-widest" x-text="staff.posisi"></span>
-                                        <span class="text-[8px] text-slate-600 font-mono" x-text="'ID:' + staff.id"></span>
-                                    </div>
+                                    <span class="text-[9px] text-blue-400 font-black uppercase tracking-widest" x-text="staff.posisi"></span>
                                 </div>
                             </td>
 
                             <td class="px-6 py-4">
-                                <div class="flex flex-col gap-1">
-                                    <span class="text-[10px] text-slate-300 font-medium" x-text="'Task: ' + staff.job"></span>
-                                    <span :class="staff.shiff === 'Siang' ? 'text-orange-400' : 'text-indigo-400'" 
-                                          class="text-[9px] font-mono uppercase font-black tracking-tighter" 
-                                          x-text="'Shift_' + staff.shiff"></span>
-                                </div>
+                                <select @change="updateField(staff.id, 'shiff', $event.target.value)" 
+                                        :class="staff.shiff === 'Siang' ? 'text-orange-400' : 'text-indigo-400'"
+                                        class="quick-select text-[9px] uppercase tracking-tighter outline-none">
+                                    <option value="Pagi" :selected="staff.shiff === 'Pagi'">Shift_Pagi</option>
+                                    <option value="Siang" :selected="staff.shiff === 'Siang'">Shift_Siang</option>
+                                </select>
+                                <div class="text-[8px] text-slate-500 font-medium ml-1" x-text="'Job: ' + staff.job"></div>
                             </td>
 
                             <td class="px-6 py-4">
-                                <div class="inline-block px-3 py-1 rounded bg-slate-950/50 border border-white/5">
-                                    <span class="text-[9px] text-slate-400 font-mono uppercase tracking-tighter" x-text="staff.outlet"></span>
+                                <div class="inline-block px-2 py-1 rounded bg-slate-950/40 border border-white/5">
+                                    <span class="text-[9px] text-slate-400 font-mono uppercase" x-text="staff.outlet"></span>
                                 </div>
                             </td>
 
                             <td class="px-6 py-4 text-center">
-                                <div class="relative inline-block text-left" x-data="{ openMenu: false }" @click.away="openMenu = false">
-                                    <button @click="openMenu = !openMenu" 
-                                            class="flex items-center gap-2 mx-auto px-3 py-1.5 rounded-lg bg-slate-900/50 border border-white/10 hover:border-blue-500/30 transition-all active:scale-95">
-                                        <span :class="staff.status === 'Aktif' ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'" 
-                                              class="w-1.5 h-1.5 rounded-full animate-pulse"></span>
-                                        <span class="text-[8px] font-black uppercase tracking-widest" 
-                                              :class="staff.status === 'Aktif' ? 'text-emerald-400' : 'text-red-400'" 
-                                              x-text="staff.status === 'Aktif' ? 'online' : 'offline'"></span>
-                                        <svg class="w-3 h-3 text-slate-600" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>
-                                    </button>
-
-                                    <div x-show="openMenu" x-cloak 
-                                         x-transition:enter="transition ease-out duration-100"
-                                         x-transition:enter-start="transform opacity-0 scale-95"
-                                         x-transition:enter-end="transform opacity-100 scale-100"
-                                         class="absolute left-1/2 -translate-x-1/2 mt-2 w-32 rounded-xl glass border border-white/10 shadow-2xl z-50 overflow-hidden">
-                                        <div class="py-1">
-                                            <button @click="toggleStatus(staff.id, 'Aktif'); openMenu = false" class="flex items-center w-full px-4 py-2 text-[9px] font-black uppercase tracking-widest text-emerald-400 hover:bg-emerald-500/10">
-                                                Set Online
-                                            </button>
-                                            <button @click="toggleStatus(staff.id, 'Non Aktif'); openMenu = false" class="flex items-center w-full px-4 py-2 text-[9px] font-black uppercase tracking-widest text-red-400 hover:bg-red-500/10 border-t border-white/5">
-                                                Set Offline
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+                                <select @change="updateField(staff.id, 'status', $event.target.value)"
+                                        :class="staff.status === 'Aktif' ? 'text-emerald-400' : 'text-red-400'"
+                                        class="quick-select text-[8px] uppercase tracking-[0.2em] outline-none mx-auto block text-center">
+                                    <option value="Aktif" :selected="staff.status === 'Aktif'">● Online</option>
+                                    <option value="Non Aktif" :selected="staff.status === 'Non Aktif'">○ Offline</option>
+                                </select>
                             </td>
 
                             <td class="px-6 py-4 text-right">
-                                <div class="flex justify-end gap-1 opacity-20 group-hover:opacity-100 transition-opacity">
-                                    <button @click="openModal('edit', staff)" class="p-2 hover:bg-blue-500/20 rounded-lg text-blue-400 transition-colors">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                <div class="relative inline-block text-left" x-data="{ openOpt: false }" @click.away="openOpt = false">
+                                    <button @click="openOpt = !openOpt" class="p-2 hover:bg-white/5 rounded-lg text-slate-500 hover:text-white transition-all">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>
                                     </button>
-                                    <button @click="burnStaff(staff.id)" class="p-2 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                    </button>
+                                    <div x-show="openOpt" x-cloak class="absolute right-0 mt-2 w-32 rounded-xl glass border border-white/10 shadow-2xl z-50 overflow-hidden">
+                                        <button @click="openModal('edit', staff); openOpt = false" class="flex items-center w-full px-4 py-3 text-[9px] font-black uppercase text-blue-400 hover:bg-blue-500/10">
+                                            Edit Data
+                                        </button>
+                                        <button @click="burnStaff(staff.id); openOpt = false" class="flex items-center w-full px-4 py-3 text-[9px] font-black uppercase text-red-400 hover:bg-red-500/10 border-t border-white/5">
+                                            Delete Node
+                                        </button>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -141,79 +120,71 @@
             </table>
         </div>
 
-        <div class="p-4 bg-slate-900/60 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
-            <span class="text-[9px] font-mono text-slate-500 uppercase tracking-[0.2em]" x-text="`Record ${startRange()} - ${endRange()} of ${staffData.length}`"></span>
-            
-            <div class="flex items-center gap-2">
-                <button @click="prevPage()" :disabled="page === 1" class="px-4 py-2 bg-white/5 hover:bg-blue-600/20 disabled:opacity-5 rounded-xl border border-white/10 text-[9px] font-black uppercase tracking-widest transition-all">Prev</button>
-                
-                <div class="flex gap-1">
-                    <template x-for="p in totalPages" :key="p">
-                        <button @click="page = p" 
-                                :class="page === p ? 'bg-blue-600 text-white border-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.3)]' : 'bg-white/5 text-slate-500 border-white/5'" 
-                                class="w-8 h-8 rounded-lg border text-[10px] font-black transition-all" x-text="p"></button>
-                    </template>
-                </div>
-
-                <button @click="nextPage()" :disabled="page >= totalPages" class="px-4 py-2 bg-white/5 hover:bg-blue-600/20 disabled:opacity-5 rounded-xl border border-white/10 text-[9px] font-black uppercase tracking-widest transition-all">Next</button>
+        <div class="p-4 bg-slate-900/60 border-t border-white/5 flex justify-between items-center">
+            <span class="text-[9px] font-mono text-slate-500" x-text="`LOG: ${startRange()} - ${endRange()} / TOTAL: ${staffData.length}`"></span>
+            <div class="flex items-center gap-1">
+                <button @click="prevPage()" :disabled="page === 1" class="px-3 py-1.5 bg-white/5 rounded-lg text-[9px] uppercase font-black disabled:opacity-20">Prev</button>
+                <template x-for="p in totalPages" :key="p">
+                    <button @click="page = p" :class="page === p ? 'bg-blue-600' : 'bg-white/5'" class="w-6 h-6 rounded text-[9px] font-bold" x-text="p"></button>
+                </template>
+                <button @click="nextPage()" :disabled="page >= totalPages" class="px-3 py-1.5 bg-white/5 rounded-lg text-[9px] uppercase font-black disabled:opacity-20">Next</button>
             </div>
         </div>
     </div>
 
-    <div x-show="modalOpen" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
-        <div @click.away="modalOpen = false" class="glass w-full max-w-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden" x-transition:enter="duration-300 ease-out" x-transition:enter-start="opacity-0 scale-90">
+    <div x-show="modalOpen" x-cloak 
+         class="fixed inset-0 z-[100] flex justify-center items-start pt-16 md:pt-24 p-4 bg-slate-950/90 backdrop-blur-md overflow-y-auto">
+        
+        <div @click.away="modalOpen = false" 
+             class="glass w-full max-w-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden mb-10" 
+             x-transition:enter="duration-300 ease-out" x-transition:enter-start="opacity-0 -translate-y-8 scale-95">
+            
             <div class="p-6 border-b border-white/5 bg-slate-900/50 flex justify-between items-center">
-                <h3 class="text-xs font-black uppercase tracking-[0.4em] text-blue-400" x-text="editMode ? 'Modify Identity' : 'Mint New Personnel'"></h3>
+                <h3 class="text-xs font-black uppercase tracking-[0.4em] text-blue-400" x-text="editMode ? 'Modify Personnel' : 'New Registration'"></h3>
                 <button @click="modalOpen = false" class="text-slate-500 hover:text-white text-2xl">&times;</button>
             </div>
             
             <form @submit.prevent="commitStaff" class="p-8 space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="md:col-span-2">
-                        <label class="text-[8px] uppercase font-black text-slate-500 tracking-[0.2em] mb-2 block">Full Name</label>
-                        <input type="text" x-model="formData.nama" class="w-full px-5 py-4 rounded-2xl text-sm" placeholder="Ex: Hazwa Fattihana" required>
+                        <label class="text-[8px] uppercase font-black text-slate-500 mb-2 block tracking-widest">Full Name</label>
+                        <input type="text" x-model="formData.nama" class="w-full px-5 py-4 rounded-2xl text-sm" placeholder="Name..." required>
                     </div>
-                    
                     <div>
-                        <label class="text-[8px] uppercase font-black text-slate-500 tracking-[0.2em] mb-2 block">Position</label>
-                        <select x-model="formData.posisi" class="w-full px-5 py-4 rounded-2xl text-sm appearance-none cursor-pointer">
+                        <label class="text-[8px] uppercase font-black text-slate-500 mb-2 block tracking-widest">Position</label>
+                        <select x-model="formData.posisi" class="w-full px-5 py-4 rounded-2xl text-sm">
                             <option value="cs">CS</option>
                             <option value="teknisi">TEKNISI</option>
                             <option value="admin">ADMIN</option>
-                            <option value="lead">LEAD</option>
                         </select>
                     </div>
-
                     <div>
-                        <label class="text-[8px] uppercase font-black text-slate-500 tracking-[0.2em] mb-2 block">Shift Schedule</label>
-                        <select x-model="formData.shiff" class="w-full px-5 py-4 rounded-2xl text-sm appearance-none cursor-pointer">
-                            <option value="Pagi">Pagi (Morning)</option>
-                            <option value="Siang">Siang (Afternoon)</option>
+                        <label class="text-[8px] uppercase font-black text-slate-500 mb-2 block tracking-widest">Initial Shift</label>
+                        <select x-model="formData.shiff" class="w-full px-5 py-4 rounded-2xl text-sm">
+                            <option value="Pagi">Pagi</option>
+                            <option value="Siang">Siang</option>
                         </select>
                     </div>
-
                     <div>
-                        <label class="text-[8px] uppercase font-black text-slate-500 tracking-[0.2em] mb-2 block">Job Description</label>
-                        <input type="text" x-model="formData.job" class="w-full px-5 py-4 rounded-2xl text-sm" placeholder="Ex: Mesin / Software">
+                        <label class="text-[8px] uppercase font-black text-slate-500 mb-2 block tracking-widest">Job Desc</label>
+                        <input type="text" x-model="formData.job" class="w-full px-5 py-4 rounded-2xl text-sm" placeholder="Ex: Mesin">
                     </div>
-
                     <div>
-                        <label class="text-[8px] uppercase font-black text-slate-500 tracking-[0.2em] mb-2 block">Current Status</label>
-                        <select x-model="formData.status" class="w-full px-5 py-4 rounded-2xl text-sm appearance-none cursor-pointer">
-                            <option value="Aktif">Aktif (Online)</option>
-                            <option value="Non Aktif">Non Aktif (Offline)</option>
+                        <label class="text-[8px] uppercase font-black text-slate-500 mb-2 block tracking-widest">Status</label>
+                        <select x-model="formData.status" class="w-full px-5 py-4 rounded-2xl text-sm">
+                            <option value="Aktif">Aktif</option>
+                            <option value="Non Aktif">Non Aktif</option>
                         </select>
                     </div>
-
                     <div class="md:col-span-2">
-                        <label class="text-[8px] uppercase font-black text-slate-500 tracking-[0.2em] mb-2 block">Outlet Assignment</label>
-                        <input type="text" x-model="formData.outlet" class="w-full px-5 py-4 rounded-2xl text-sm" placeholder="Ex: S01 TIMORITEL MADIUN">
+                        <label class="text-[8px] uppercase font-black text-slate-500 mb-2 block tracking-widest">Outlet Assignment</label>
+                        <input type="text" x-model="formData.outlet" class="w-full px-5 py-4 rounded-2xl text-sm" placeholder="Outlet Name...">
                     </div>
                 </div>
 
                 <div class="pt-6 flex gap-4">
-                    <button type="button" @click="modalOpen = false" class="flex-1 px-4 py-4 rounded-2xl border border-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all text-slate-500">Abort</button>
-                    <button type="submit" class="flex-1 px-4 py-4 rounded-2xl bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 shadow-xl shadow-blue-600/40 transition-all active:scale-95" x-text="editMode ? 'Commit Sync' : 'Mint Personnel'"></button>
+                    <button type="button" @click="modalOpen = false" class="flex-1 px-4 py-4 rounded-2xl border border-white/5 text-[10px] font-black uppercase text-slate-500">Abort</button>
+                    <button type="submit" class="flex-1 px-4 py-4 rounded-2xl bg-blue-600 text-white text-[10px] font-black uppercase shadow-xl shadow-blue-600/40" x-text="editMode ? 'Update Node' : 'Mint Personnel'"></button>
                 </div>
             </form>
         </div>
@@ -223,13 +194,7 @@
 <script>
     function staffApp() {
         return {
-            modalOpen: false,
-            editMode: false,
-            page: 1,
-            perPage: 5,
-            totalPages: 1,
-
-            // Initial Data sesuai format user
+            modalOpen: false, editMode: false, page: 1, perPage: 5, totalPages: 1,
             staffData: [
                 { id: 349, nama: "Hazwa Fattihana", outlet: "S01 TIMORITEL MADIUN", posisi: "cs", shiff: "Siang", status: "Non Aktif", job: 'Mesin' },
                 { id: 350, nama: "Budi Santoso", outlet: "S02 TIMORITEL SOLO", posisi: "teknisi", shiff: "Pagi", status: "Aktif", job: 'Hardware' },
@@ -237,42 +202,28 @@
                 { id: 352, nama: "Siti Aminah", outlet: "S03 TIMORITEL YOGYA", posisi: "cs", shiff: "Pagi", status: "Non Aktif", job: 'Sparepart' },
                 { id: 353, nama: "Rizky Pratama", outlet: "S02 TIMORITEL SOLO", posisi: "teknisi", shiff: "Siang", status: "Aktif", job: 'Software' }
             ],
-
             formData: { id: '', nama: '', outlet: '', posisi: 'cs', shiff: 'Pagi', status: 'Aktif', job: '' },
 
-            init() {
-                this.updatePagination();
-            },
-
-            updatePagination() {
-                this.totalPages = Math.max(1, Math.ceil(this.staffData.length / this.perPage));
-            },
-
+            init() { this.updatePagination(); },
+            updatePagination() { this.totalPages = Math.ceil(this.staffData.length / this.perPage); },
             pagedStaff() {
                 const start = (this.page - 1) * this.perPage;
                 return this.staffData.slice(start, start + this.perPage);
             },
-
-            startRange() { return this.staffData.length === 0 ? 0 : (this.page - 1) * this.perPage + 1; },
+            startRange() { return (this.page - 1) * this.perPage + 1; },
             endRange() { return Math.min(this.page * this.perPage, this.staffData.length); },
-
             nextPage() { if(this.page < this.totalPages) this.page++; },
             prevPage() { if(this.page > 1) this.page--; },
 
-            toggleStatus(id, newStatus) {
+            updateField(id, field, value) {
                 const idx = this.staffData.findIndex(s => s.id == id);
-                if (idx !== -1) {
-                    this.staffData[idx].status = newStatus;
-                }
+                if (idx !== -1) this.staffData[idx][field] = value;
             },
 
             openModal(mode, data = null) {
                 this.editMode = mode === 'edit';
-                if (this.editMode && data) {
-                    this.formData = { ...data };
-                } else {
-                    this.formData = { id: Math.floor(Math.random() * 900) + 100, nama: '', outlet: '', posisi: 'cs', shiff: 'Pagi', status: 'Aktif', job: '' };
-                }
+                if (this.editMode && data) { this.formData = { ...data }; }
+                else { this.formData = { id: Date.now().toString().slice(-3), nama: '', outlet: '', posisi: 'cs', shiff: 'Pagi', status: 'Aktif', job: '' }; }
                 this.modalOpen = true;
             },
 
@@ -280,19 +231,15 @@
                 if (this.editMode) {
                     const idx = this.staffData.findIndex(s => s.id == this.formData.id);
                     if (idx !== -1) this.staffData[idx] = { ...this.formData };
-                } else {
-                    this.staffData.unshift({ ...this.formData });
-                    this.page = 1;
-                }
-                this.updatePagination();
-                this.modalOpen = false;
+                } else { this.staffData.unshift({ ...this.formData }); this.page = 1; }
+                this.updatePagination(); this.modalOpen = false;
             },
 
             burnStaff(id) {
-                if (confirm('Burn record ID ' + id + ' from chain?')) {
+                if (confirm('Burn Node ID ' + id + '?')) {
                     this.staffData = this.staffData.filter(s => s.id != id);
                     this.updatePagination();
-                    if (this.page > this.totalPages) this.page = this.totalPages || 1;
+                    if (this.page > this.totalPages) this.page = Math.max(1, this.totalPages);
                 }
             }
         }
