@@ -159,7 +159,7 @@
                     const response = await fetch(this.url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ method: 'fetch', table: 'transaksi', params: [24] })
+                        body: JSON.stringify({ method: 'fetch', table: 'trans', params: [24] })
                     });
                     const res = await response.json();
                     if (res && res.data) {
