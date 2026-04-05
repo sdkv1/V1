@@ -171,27 +171,21 @@
             prevPage() { if(this.page > 1) this.page--; },
 
             updateClock() {
-    const now = new Date();
-    
-    // Format Jam:Menit (HH:mm)
-    this.liveTime = now.toLocaleTimeString('en-GB', { 
-        hour12: false, 
-        hour: '2-digit', 
-        minute: '2-digit' 
-    });
+            const now = new Date();
+            const hrs = now.getHours();
+            const min = now.getMinutes();
+            const sec = now.getSeconds();
 
-    // Detik (:ss)
-    const sec = now.getSeconds().toString().padStart(2, '0');
-    this.liveSeconds = `:${sec}`;
+            // Hitung Rotasi (Derajat)
+            this.secondRotation = (sec * 6); // 360 / 60
+            this.minuteRotation = (min * 6) + (sec * 0.1); 
+            this.hourRotation = (hrs * 30) + (min * 0.5);
 
-    // Tanggal (Contoh: 05 APR 2026)
-    this.liveDate = now.toLocaleDateString('id-ID', { 
-        day: '2-digit', 
-        month: 'short', 
-        year: 'numeric' 
-    }).toUpperCase();
-},
-
+            // Update Teks Digital & Tanggal
+            this.liveTime = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+            this.liveSeconds = `:${sec.toString().padStart(2, '0')}`;
+            this.liveDate = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+        },
 
             async getTrans() {
                 try {
