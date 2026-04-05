@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Griya Pinarak - Compact Monitor</title>
+    <title>Griya Pinarak - Live Monitor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
@@ -20,73 +20,84 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .neon-blue { color: #3b82f6; text-shadow: 0 0 8px rgba(59, 130, 246, 0.4); }
-        .font-mono { font-family: 'Fira Code', monospace; font-size: 11px; }
+        .neon-blue { color: #3b82f6; text-shadow: 0 0 8px rgba(59, 130, 246, 0.5); }
+        .font-mono { font-family: 'Fira Code', monospace; }
     </style>
 </head>
 <body class="p-2 md:p-4 min-h-screen">
 
 <div class="max-w-[1100px] mx-auto w-full" x-data="transMonitor()" x-init="init()">
     
-    <div class="flex justify-between items-center mb-6 gap-4 bg-slate-900/50 p-4 rounded-2xl border border-white/5">
-        <div>
-            <h1 class="text-lg font-black tracking-tighter uppercase italic">GRIYA <span class="neon-blue">PINARAK</span></h1>
-            <p class="text-[9px] text-slate-500 font-mono tracking-widest uppercase">NODE_24 // SYNC: <span x-text="lastSync" class="text-blue-400"></span></p>
+    <div class="flex justify-between items-center mb-4 bg-slate-900/50 p-3 rounded-xl border border-white/5 shadow-2xl">
+        <div class="flex items-center gap-4">
+            <div>
+                <h1 class="text-sm font-black tracking-tighter uppercase italic">GRIYA <span class="neon-blue">PINARAK</span></h1>
+                <p class="text-[8px] text-slate-500 font-mono uppercase tracking-widest">Live Node_24</p>
+            </div>
+            <div class="h-8 w-[1px] bg-white/10 hidden sm:block"></div>
+            <div class="hidden sm:block">
+                <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest mb-0.5">System Time</p>
+                <p class="text-xs font-mono text-blue-400 font-bold tracking-wider" x-text="liveTime"></p>
+            </div>
         </div>
         
-        <button @click="getTrans()" class="p-2.5 bg-blue-600/10 hover:bg-blue-600/20 rounded-xl border border-blue-500/30 transition-all shadow-lg" :disabled="loading">
-            <svg :class="loading ? 'animate-spin' : ''" class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-            </svg>
-        </button>
-    </div>
-
-    <div class="grid grid-cols-3 gap-3 mb-6">
-        <div class="glass p-3 rounded-xl border-l-2 border-l-blue-500">
-            <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Total</p>
-            <h3 class="text-lg font-black" x-text="transactions.length"></h3>
-        </div>
-        <div class="glass p-3 rounded-xl border-l-2 border-l-emerald-500">
-            <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Branch</p>
-            <h3 class="text-xs font-bold mt-1 truncate">Madiun</h3>
-        </div>
-        <div class="glass p-3 rounded-xl border-l-2 border-l-amber-500">
-            <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Status</p>
-            <h3 class="text-[10px] font-bold text-emerald-400 uppercase mt-1">Live</h3>
+        <div class="flex items-center gap-3">
+            <div class="text-right hidden md:block">
+                <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Last Sync</p>
+                <p class="text-[10px] font-mono text-slate-300" x-text="lastSync"></p>
+            </div>
+            <button @click="getTrans()" class="p-2 bg-blue-600/10 hover:bg-blue-600/20 rounded-lg border border-blue-500/30 transition-all shadow-lg" :disabled="loading">
+                <svg :class="loading ? 'animate-spin' : ''" class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </button>
         </div>
     </div>
 
-    <div class="glass rounded-2xl shadow-xl border border-white/10 overflow-hidden">
+    <div class="grid grid-cols-3 gap-2 mb-4">
+        <div class="glass p-2.5 rounded-xl border-l-2 border-l-blue-500 flex flex-col justify-center">
+            <span class="text-[7px] font-black text-slate-500 uppercase tracking-widest">Data Count</span>
+            <span class="text-sm font-black" x-text="transactions.length"></span>
+        </div>
+        <div class="glass p-2.5 rounded-xl border-l-2 border-l-emerald-500 flex flex-col justify-center">
+            <span class="text-[7px] font-black text-slate-500 uppercase tracking-widest">Branch</span>
+            <span class="text-[10px] font-bold truncate">Madiun Node 24</span>
+        </div>
+        <div class="glass p-2.5 rounded-xl border-l-2 border-l-amber-500 flex flex-col justify-center">
+            <span class="text-[7px] font-black text-slate-500 uppercase tracking-widest">Status</span>
+            <span class="text-[9px] font-black text-emerald-400 uppercase tracking-widest animate-pulse">Scanning...</span>
+        </div>
+    </div>
+
+    <div class="glass rounded-xl shadow-xl border border-white/10 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-slate-800/80 text-slate-500 text-[9px] uppercase font-black tracking-widest border-b border-white/5">
-                        <th class="px-5 py-3 w-16">Q</th>
-                        <th class="px-5 py-3">Invoice & ID</th>
-                        <th class="px-5 py-3">Timestamp</th>
-                        <th class="px-5 py-3 text-right">Node</th>
+                    <tr class="bg-slate-800/80 text-slate-500 text-[8px] uppercase font-black tracking-widest border-b border-white/5">
+                        <th class="px-4 py-2 w-12 text-center">No</th>
+                        <th class="px-4 py-2">Invoice & UUID</th>
+                        <th class="px-4 py-2">Timestamp</th>
+                        <th class="px-4 py-2 text-right">Node_ID</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
-                    <template x-for="trans in transactions" :key="trans.id">
-                        <tr class="hover:bg-white/[0.03] transition-all group">
-                            <td class="px-5 py-2.5">
-                                <div class="bg-slate-800 px-2 py-1 rounded text-center border border-white/5 group-hover:border-blue-500/50 transition-all">
-                                    <span class="text-blue-400 font-bold text-xs" x-text="trans.nomor_antrian"></span>
+                    <template x-for="(trans, index) in transactions" :key="trans.id">
+                        <tr class="hover:bg-blue-500/[0.05] transition-all group">
+                            <td class="px-4 py-2 text-center">
+                                <div class="bg-slate-800 text-[10px] font-mono font-bold text-blue-400 py-0.5 rounded border border-white/5 group-hover:border-blue-500/50" x-text="trans.nomor_antrian"></div>
+                            </td>
+                            <td class="px-4 py-2">
+                                <div class="flex flex-col">
+                                    <div class="flex items-center gap-1.5">
+                                        <div class="w-1 h-1 rounded-full bg-blue-500 shadow-[0_0_5px_#3b82f6]"></div>
+                                        <span class="font-bold text-slate-100 text-[11px] font-mono tracking-tight" x-text="trans.invoice_service"></span>
+                                    </div>
+                                    <span class="text-[7px] text-slate-600 font-mono ml-2.5" x-text="'UUID:' + trans.id"></span>
                                 </div>
                             </td>
-                            <td class="px-5 py-2.5">
-                                <div class="flex flex-col">
-                                    <span class="font-bold text-slate-100 text-xs font-mono" x-text="trans.invoice_service"></span>
-                                    <span class="text-[8px] text-slate-600 font-mono" x-text="'ID:' + trans.id"></span>
-                                </div>
-                            </td>
-                            <td class="px-5 py-2.5 text-slate-400 text-[10px]" x-text="trans.tanggal_antrian"></td>
-                            <td class="px-5 py-2.5 text-right">
-                                <div class="flex flex-col">
-                                    <span class="text-[10px] text-slate-300 font-bold" x-text="trans.nama_cabang"></span>
-                                    <span class="text-[8px] text-slate-600 font-black uppercase" x-text="'N_' + trans.id_cabang_erzap"></span>
-                                </div>
+                            <td class="px-4 py-2 text-slate-400 text-[10px] font-mono" x-text="trans.tanggal_antrian"></td>
+                            <td class="px-4 py-2 text-right">
+                                <span class="text-[8px] text-slate-500 font-black uppercase bg-slate-950/50 px-1.5 py-0.5 rounded border border-white/5" x-text="'NODE_' + trans.id_cabang_erzap"></span>
                             </td>
                         </tr>
                     </template>
@@ -95,9 +106,14 @@
         </div>
     </div>
 
-    <div class="mt-4 flex justify-between items-center px-2 opacity-50">
-        <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">© 2026 GP-CORE</p>
-        <span class="text-[8px] text-slate-500 font-mono uppercase">System_Active: True</span>
+    <div class="mt-3 px-2">
+        <div class="w-full bg-slate-800 h-[2px] rounded-full overflow-hidden">
+            <div class="bg-blue-500 h-full transition-all duration-[30000ms] linear" :style="'width: ' + progress + '%'"></div>
+        </div>
+        <div class="flex justify-between items-center mt-1">
+            <p class="text-[7px] text-slate-600 font-black uppercase tracking-widest">Auto_Refresh System Active</p>
+            <p class="text-[7px] text-slate-600 font-mono uppercase" x-text="'Next Update in ' + Math.ceil((100-progress)/3.33) + 's'"></p>
+        </div>
     </div>
 </div>
 
@@ -108,22 +124,54 @@
             loading: false,
             transactions: [],
             lastSync: '--:--',
-            init() { this.getTrans(); setInterval(() => this.getTrans(), 60000); },
+            liveTime: '00:00:00',
+            progress: 0,
+
+            init() {
+                // 1. Jalankan jam detik (Real-time)
+                this.startClock();
+                
+                // 2. Auto Load data pertama kali
+                this.getTrans();
+                
+                // 3. Set interval Refresh data (Setiap 30 detik)
+                setInterval(() => {
+                    this.getTrans();
+                    this.progress = 0; // Reset progress bar
+                }, 30000);
+
+                // 4. Progress bar animation logic
+                setInterval(() => {
+                    if(this.progress < 100) this.progress += 3.33; // Simulasi 30 detik
+                }, 1000);
+            },
+
+            startClock() {
+                setInterval(() => {
+                    const now = new Date();
+                    this.liveTime = now.toLocaleTimeString('en-GB'); // Format HH:MM:SS
+                }, 1000);
+            },
+
             async getTrans() {
                 this.loading = true;
                 try {
                     const response = await fetch(this.url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ method: 'fetch', table: 'trans', params: [24] })
+                        body: JSON.stringify({ method: 'fetch', table: 'transaksi', params: [24] })
                     });
                     const res = await response.json();
                     if (res && res.data) {
                         this.transactions = Array.isArray(res.data) ? res.data : [res.data];
                         const now = new Date();
-                        this.lastSync = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+                        this.lastSync = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
                     }
-                } catch (err) { console.error(err); } finally { this.loading = false; }
+                } catch (err) { 
+                    console.error('Core Error:', err); 
+                } finally { 
+                    this.loading = false; 
+                }
             }
         }
     }
