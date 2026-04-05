@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Griya Pinarak - System Control v1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        [x-cloak] { display: none !important; }
+        body { 
+            background-color: #0f172a; 
+            color: #f8fafc; 
+            font-family: 'Inter', sans-serif;
+            background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f172a 100%);
+        }
+        .glass { 
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .neon-green { color: #22c55e; text-shadow: 0 0 10px rgba(34, 197, 94, 0.4); }
+        .neon-blue { color: #3b82f6; text-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
+        .input-dark {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s;
+        }
+        .input-dark:focus { border-color: #22c55e; outline: none; box-shadow: 0 0 15px rgba(34, 197, 94, 0.1); }
+        .font-mono { font-family: 'Fira Code', monospace; }
+    </style>
+</head>
+<body class="p-4 lg:p-8 min-h-screen">
+
+<div class="max-w-[1400px] mx-auto w-full" x-data="systemControl()" x-init="init()">
+    
+    <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+        <div class="text-center md:text-left">
+            <h1 class="text-3xl font-black tracking-tighter uppercase italic">GRIYA <span class="neon-green">PINARAK</span></h1>
+            <div class="flex items-center gap-2 mt-2 justify-center md:justify-start">
+                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                <p class="text-[10px] text-slate-500 font-mono tracking-widest uppercase">System Core v1.0.4 // Connection: Stable</p>
+            </div>
+        </div>
+        
+        <div class="flex flex-wrap justify-center gap-3">
+            <button @click="refreshAll()" class="p-3 bg-slate-800 hover:bg-slate-700 rounded-2xl border border-slate-700 transition-all shadow-xl" :disabled="loading">
+                <svg :class="loading ? 'animate-spin' : ''" class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            </button>
+            <button @click="openModal('add')" class="px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-black rounded-2xl transition-all shadow-lg shadow-green-900/40 text-[10px] tracking-widest uppercase">
+                + Add Staff Node
+            </button>
+        </div>
+    </div>
+
+    <div class="mb-6 flex items-end justify-between">
+        <div>
+            <h2 class="text-xs font-black text-slate-500 uppercase tracking-[0.3em]">Module_01</h2>
+            <h3 class="text-xl font-black text-white uppercase tracking-tight">Staff Resources</h3>
+        </div>
+        <div class="flex items-center gap-3 bg-slate-800/40 px-3 py-1.5 rounded-xl border border-white/5">
+            <span class="text-[9px] text-slate-500 font-black uppercase">Rows:</span>
+            <select x-model="rowsPerPage" @change="currentPage = 1" class="bg-transparent text-[10px] text-green-400 font-bold outline-none cursor-pointer">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="25">25</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="glass rounded-[2rem] shadow-2xl border border-white/10 overflow-hidden mb-12">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-800/50 text-slate-500 text-[9px] uppercase font-black tracking-[0.2em] border-b border-white/5">
+                        <th class="px-8 py-5">Staff Identity</th>
+                        <th class="px-8 py-5">Outlet</th>
+                        <th class="px-8 py-5 text-center">Status / Job</th>
+                        <th class="px-8 py-5 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    <template x-for="item in pagedStaffs" :key="item.id || item.Id">
+                        <tr class="hover:bg-white/[0.03] transition-all group">
+                            <td class="px-8 py-5">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center border border-white/5 group-hover:border-green-500/30 transition-all">
+                                        <span class="text-green-500 font-mono text-xs font-bold" x-text="item.id || item.Id"></span>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="font-bold text-slate-100 text-sm" x-text="item.nama || item.Nama"></div>
+                                        <div class="text-[9px] text-slate-500 uppercase font-black tracking-wider" x-text="item.posisi || item.Posisi"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-8 py-5">
+                                <div class="text-slate-400 text-xs font-medium" x-text="item.outlet || item.Outlet"></div>
+                            </td>
+                            <td class="px-8 py-5 text-center">
+                                <div class="flex flex-col items-center gap-1.5">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase border" 
+                                          :class="(item.status || item.Status) === 'Aktif' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-slate-700/50 text-slate-500 border-white/5'"
+                                          x-text="item.status || item.Status"></span>
+                                    <span class="text-[9px] text-blue-400 font-mono font-bold" x-text="item.job || item.Job"></span>
+                                </div>
+                            </td>
+                            <td class="px-8 py-5 text-right" x-data="{ menuOpen: false }">
+                                <div class="relative inline-block text-left">
+                                    <button @click="menuOpen = !menuOpen" @click.away="menuOpen = false" class="p-2 hover:bg-slate-700/50 rounded-xl transition-colors">
+                                        <svg class="w-5 h-5 text-slate-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>
+                                    </button>
+                                    <div x-show="menuOpen" x-cloak class="absolute right-0 mt-2 w-32 glass border border-white/20 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                                        <button @click="openModal('edit', item); menuOpen = false" class="w-full text-left px-5 py-3 text-[10px] font-black text-blue-400 hover:bg-blue-500/10 border-b border-white/5 uppercase">Edit</button>
+                                        <button @click="deleteStaff(item.id || item.Id); menuOpen = false" class="w-full text-left px-5 py-3 text-[10px] font-black text-red-400 hover:bg-red-500/10 uppercase">Hapus</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+        <div class="px-8 py-5 border-t border-white/5 bg-slate-900/30 flex justify-between items-center">
+            <span class="text-[9px] font-mono text-slate-500 uppercase font-black">Page <span class="text-white" x-text="currentPage"></span> of <span x-text="totalPages"></span></span>
+            <div class="flex gap-2">
+                <button @click="currentPage--" :disabled="currentPage === 1" class="p-2 bg-slate-800 rounded-lg disabled:opacity-20 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                <button @click="currentPage++" :disabled="currentPage === totalPages" class="p-2 bg-slate-800 rounded-lg disabled:opacity-20 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"></path></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-6">
+        <h2 class="text-xs font-black text-slate-500 uppercase tracking-[0.3em]">Module_02</h2>
+        <h3 class="text-xl font-black text-white uppercase tracking-tight">Active Transactions</h3>
+    </div>
+
+    <div class="glass rounded-[2rem] shadow-2xl border border-white/10 overflow-hidden mb-20">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-800/50 text-slate-500 text-[9px] uppercase font-black tracking-[0.2em] border-b border-white/5">
+                        <th class="px-8 py-5">Antrian & ID</th>
+                        <th class="px-8 py-5">Invoice Reference</th>
+                        <th class="px-8 py-5">Timestamp</th>
+                        <th class="px-8 py-5">Location Node</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    <template x-for="trans in transactions" :key="trans.id">
+                        <tr class="hover:bg-white/[0.03] transition-all">
+                            <td class="px-8 py-5">
+                                <div class="flex flex-col">
+                                    <span class="text-blue-400 font-black text-sm tracking-tighter" x-text="trans.nomor_antrian"></span>
+                                    <span class="text-[9px] text-slate-600 font-mono uppercase" x-text="'UUID: ' + trans.id"></span>
+                                </div>
+                            </td>
+                            <td class="px-8 py-5">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]"></div>
+                                    <span class="font-bold text-slate-200 text-xs font-mono" x-text="trans.invoice_service"></span>
+                                </div>
+                            </td>
+                            <td class="px-8 py-5">
+                                <span class="text-slate-400 text-[10px] font-mono" x-text="trans.tanggal_antrian"></span>
+                            </td>
+                            <td class="px-8 py-5">
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] text-slate-300 font-bold" x-text="trans.nama_cabang"></span>
+                                    <span class="text-[8px] text-slate-600 font-black uppercase tracking-widest" x-text="'Branch ID: ' + trans.id_cabang_erzap"></span>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+        <template x-if="transactions.length === 0">
+            <div class="p-20 text-center text-slate-600 font-mono text-[10px] uppercase tracking-[0.5em]">Searching for active nodes...</div>
+        </template>
+    </div>
+
+    <div x-show="showModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md" x-transition x-cloak>
+        <div class="glass w-full max-w-md rounded-[2.5rem] shadow-2xl overflow-hidden shadow-black">
+            <div class="p-8 border-b border-white/10 flex justify-between items-center bg-slate-900/50">
+                <div>
+                    <h3 class="text-xs font-black neon-green uppercase tracking-[0.2em]" x-text="mode === 'edit' ? 'Update Entry' : 'New Registry'"></h3>
+                    <p class="text-[9px] text-slate-500 font-mono mt-1">S_ID: <span x-text="form.Id || 'NEW_NODE'"></span></p>
+                </div>
+                <button @click="showModal = false" class="w-10 h-10 flex items-center justify-center bg-slate-800 rounded-full text-slate-400 hover:text-white transition">&times;</button>
+            </div>
+            <form @submit.prevent="saveStaff" class="p-8 space-y-5">
+                <div>
+                    <label class="block text-[9px] uppercase font-black text-slate-500 mb-2 ml-1">Staff Full Name</label>
+                    <input type="text" x-model="form.nama" required class="w-full input-dark rounded-2xl px-5 py-3 text-sm font-bold shadow-inner">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[9px] uppercase font-black text-slate-500 mb-2 ml-1">Position</label>
+                        <select x-model="form.posisi" class="w-full input-dark rounded-2xl px-4 py-3 text-xs font-bold uppercase">
+                            <option value="Teknisi">Teknisi</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Cs">Cs</option>
+                            <option value="KACAB">KACAB</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[9px] uppercase font-black text-slate-500 mb-2 ml-1">Status</label>
+                        <select x-model="form.status" class="w-full input-dark rounded-2xl px-4 py-3 text-xs font-bold uppercase">
+                            <option value="Aktif">Aktif</option>
+                            <option value="non aktif">Non Aktif</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[9px] uppercase font-black text-slate-500 mb-2 ml-1">Outlet Node</label>
+                    <input type="text" x-model="form.outlet" required class="w-full input-dark rounded-2xl px-5 py-3 text-sm font-bold shadow-inner">
+                </div>
+                <div>
+                    <label class="block text-[9px] uppercase font-black text-slate-500 mb-2 ml-1">Division/Job</label>
+                    <select x-model="form.job" class="w-full input-dark rounded-2xl px-4 py-3 text-xs font-bold uppercase">
+                        <option value="Mesin">Mesin</option>
+                        <option value="Interface">Interface</option>
+                        <option value="Software">Software</option>
+                        <option value="Aksesoris">Aksesori</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-4 pt-6">
+                    <button type="button" @click="showModal = false" class="text-[10px] font-black text-slate-500 uppercase tracking-widest hover:text-slate-300">Abort</button>
+                    <button type="submit" class="bg-green-600 hover:bg-green-500 px-10 py-3 rounded-2xl text-[10px] font-black text-white uppercase tracking-widest shadow-lg shadow-green-900/40 transition-all active:scale-95" :disabled="loading">
+                        <span x-text="loading ? 'Syncing...' : 'Commit Change'"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function systemControl() {
+        return {
+            url: 'https://job.hitungnota.com/api',
+            loading: false, 
+            showModal: false, 
+            mode: 'add', 
+            staffs: [], 
+            transactions: [],
+            currentPage: 1, 
+            rowsPerPage: 5,
+            form: { Id: '', nama: '', outlet: 'S01 TIMORITEL MADIUN', posisi: 'Teknisi', status: 'Aktif', job: 'Mesin' },
+
+            init() {
+                this.refreshAll();
+                // Polling transactions every 2 minutes
+                setInterval(() => this.getTrans(), 120000);
+            },
+
+            async refreshAll() {
+                await this.getStaff();
+                await this.getTrans();
+            },
+
+            // STAFF LOGIC
+            get pagedStaffs() {
+                const start = (this.currentPage - 1) * this.rowsPerPage;
+                return this.staffs.slice(start, start + parseInt(this.rowsPerPage));
+            },
+            get totalPages() { 
+                return Math.ceil(this.staffs.length / this.rowsPerPage) || 1; 
+            },
+
+            async call(payload) {
+                this.loading = true;
+                try {
+                    const response = await fetch(this.url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const res = await response.json();
+                    return res;
+                } catch (err) {
+                    console.error('API Error:', err);
+                    return null;
+                } finally { this.loading = false; }
+            },
+
+            async getStaff() {
+                const res = await this.call({ method: 'fetch', table: 'staff', params: [24] });
+                if (res && res.data) {
+                    this.staffs = Array.isArray(res.data) ? res.data : [res.data];
+                }
+            },
+
+            async getTrans() {
+                const res = await this.call({ method: 'fetch', table: 'transaksi', params: [24] });
+                if (res && res.data) {
+                    this.transactions = Array.isArray(res.data) ? res.data : [res.data];
+                }
+            },
+
+            openModal(mode, item = null) {
+                this.mode = mode; 
+                this.showModal = true;
+                if (mode === 'edit' && item) {
+                    this.form = {
+                        Id: item.id || item.Id, 
+                        nama: item.nama || item.Nama,
+                        outlet: item.outlet || item.Outlet, 
+                        posisi: item.posisi || item.Posisi,
+                        status: item.status || item.Status, 
+                        job: item.job || item.Job
+                    };
+                } else {
+                    this.form = { Id: '', nama: '', outlet: 'S01 TIMORITEL MADIUN', posisi: 'Teknisi', status: 'Aktif', job: 'Mesin' };
+                }
+            },
+
+            async saveStaff() {
+                const payload = { ...this.form, id: this.form.Id || 0, shiff: "Siang" };
+                const res = await this.call({
+                    method: 'path', 
+                    table: 'staff',
+                    params: [payload]
+                });
+
+                if (res) {
+                    // Update Local State (No full refresh)
+                    if (this.form.Id) {
+                        const index = this.staffs.findIndex(s => (s.id || s.Id) == this.form.Id);
+                        if (index !== -1) {
+                            this.staffs.splice(index, 1, { ...payload, Id: this.form.Id });
+                        }
+                    } else {
+                        // If new, push to top (using server response id if available)
+                        const newId = res.id || Date.now();
+                        this.staffs = [{ ...payload, Id: newId }, ...this.staffs];
+                    }
+                    this.showModal = false;
+                }
+            },
+
+            async deleteStaff(id) {
+                if (!confirm('Destroy this record from core?')) return;
+                const res = await this.call({ method: 'delete', table: 'staff', params: [id] });
+                if (res) {
+                    this.staffs = this.staffs.filter(s => (s.id || s.Id) != id);
+                }
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
