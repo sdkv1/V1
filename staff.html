@@ -3,108 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff v1 - Toggle Node Edition</title>
+    <title>Staff Management v1 - Sidebar Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         [x-cloak] { display: none !important; }
-        body { background-color: #020617; color: #ecfdf5; font-family: 'Inter', sans-serif; }
-        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(16px); border: 1px solid rgba(16, 185, 129, 0.1); }
+        body { background-color: #020617; color: #ecfdf5; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .glass { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(16, 185, 129, 0.1); }
         .neon-text { color: #10b981; text-shadow: 0 0 12px rgba(16, 185, 129, 0.4); }
         .sidebar-link { transition: all 0.3s; border-left: 3px solid transparent; }
         .sidebar-link.active { background: rgba(16, 185, 129, 0.1); border-left-color: #10b981; color: #10b981; }
-        .mobile-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; text-transform: uppercase; }
+        .sidebar-link:hover:not(.active) { background: rgba(255, 255, 255, 0.03); border-left-color: rgba(16, 185, 129, 0.3); }
         .input-dark { background: rgba(2, 6, 23, 0.8); border: 1px solid rgba(16, 185, 129, 0.2); color: #f0fdf4; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #10b98133; border-radius: 10px; }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen" x-data="staffManager()" x-init="getStaff()">
 
-    <aside class="hidden md:flex w-64 glass border-r border-emerald-500/10 flex-col sticky top-0 h-screen">
-        <div class="p-8 text-center md:text-left">
-            <h2 class="text-xl font-black neon-text uppercase tracking-tighter italic">Cyber<span class="text-sky-400">Staff</span></h2>
-            <p class="text-[8px] text-emerald-500/40 font-mono tracking-[0.3em] mt-1 uppercase">v1.0.5 Node Controller</p>
+    <aside class="w-full md:w-64 glass border-r border-emerald-500/10 flex flex-col z-50">
+        <div class="p-6">
+            <h2 class="text-xl font-black neon-text uppercase tracking-tighter italic text-center md:text-left">
+                Cyber<span class="text-sky-400">Staff</span>
+            </h2>
+            <p class="text-[8px] text-emerald-500/40 font-mono tracking-[0.3em] uppercase mt-1 text-center md:text-left">v1.0 Core Engine</p>
         </div>
-        <nav class="flex-1 px-4 space-y-2">
+
+        <nav class="flex-1 px-4 space-y-2 mt-4">
             <a href="#" class="sidebar-link active flex items-center gap-4 px-4 py-3 rounded-r-xl text-[10px] font-black uppercase tracking-widest">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke-width="2.5"></path></svg> Monitoring
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke-width="2.5"></path></svg>
+                Monitoring
             </a>
-            <a href="#" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-r-xl text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-emerald-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16" stroke-width="2"></path></svg> Outlets
+            <a href="#" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-r-xl text-[10px] font-black uppercase tracking-widest text-slate-500">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1" stroke-width="2"></path></svg>
+                Outlets
+            </a>
+            <a href="#" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-r-xl text-[10px] font-black uppercase tracking-widest text-slate-500">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-width="2"></path></svg>
+                Analytics
+            </a>
+            <a href="#" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-r-xl text-[10px] font-black uppercase tracking-widest text-slate-500">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-width="2"></path></svg>
+                System
             </a>
         </nav>
+
+        <div class="p-6 border-t border-emerald-500/10">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center text-slate-950 font-black text-[10px]">AD</div>
+                <div>
+                    <p class="text-[10px] font-bold text-emerald-50">Admin Root</p>
+                    <p class="text-[8px] text-emerald-500/50 uppercase">Superuser</p>
+                </div>
+            </div>
+        </div>
     </aside>
 
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 h-16 glass border-t border-emerald-500/20 flex z-[100] px-2 shadow-[0_-10px_20px_rgba(0,0,0,0.5)]">
-        <a href="#" class="mobile-nav-item active"><svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke-width="2.5"></path></svg><span>Monitor</span></a>
-        <button @click="openModal('add')" class="flex-none -translate-y-4"><div class="w-14 h-14 bg-emerald-600 rounded-full flex items-center justify-center text-slate-950 border-4 border-slate-950 shadow-lg"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-width="4"></path></svg></div></button>
-        <a href="#" class="mobile-nav-item text-slate-500"><svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4" stroke-width="2"></path></svg><span>System</span></a>
-    </nav>
-
-    <main class="flex-1 p-4 md:p-8 pb-24 md:pb-8 min-w-0">
+    <main class="flex-1 p-4 lg:p-8 overflow-y-auto">
         
-        <div class="flex justify-between items-end mb-8">
+        <div class="flex justify-between items-center mb-8">
             <div>
-                <h1 class="text-2xl font-black text-white uppercase tracking-tighter">Live Monitor</h1>
-                <p class="text-[10px] text-emerald-500/50 font-mono tracking-widest uppercase">System Status: <span class="text-sky-400">Ready</span></p>
+                <h1 class="text-xl font-black text-white uppercase tracking-widest">Node Database</h1>
+                <p class="text-[10px] text-slate-500 font-mono italic">Running Protocol v1.4.2</p>
             </div>
             
-            <div class="flex items-center gap-3">
-                <button @click="showNodes = !showNodes" 
-                        class="px-4 py-2.5 rounded-xl glass border-emerald-500/20 text-[9px] font-black uppercase tracking-widest flex items-center gap-2 transition-all hover:border-emerald-500"
-                        :class="showNodes ? 'text-emerald-400' : 'text-slate-500'">
-                    <span x-text="showNodes ? 'Hide Nodes' : 'Show Nodes'"></span>
-                    <svg class="w-4 h-4 transition-transform duration-300" :class="!showNodes ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="3"></path></svg>
-                </button>
-                
-                <button @click="getStaff()" class="p-2.5 glass hover:bg-emerald-500/10 rounded-xl text-emerald-500 transition-all">
-                    <svg :class="loading ? 'animate-spin' : ''" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9" stroke-width="2.5"></path></svg>
+            <div class="flex items-center gap-4">
+                <div class="hidden sm:flex items-center gap-2 bg-slate-900/80 px-4 py-2 rounded-xl border border-emerald-500/10">
+                    <span class="text-[9px] text-emerald-300/40 font-black uppercase">Sync Rate:</span>
+                    <select x-model="rowsPerPage" @change="currentPage = 1" class="bg-transparent text-xs text-emerald-400 outline-none font-bold cursor-pointer">
+                        <option value="10" class="bg-slate-900">10 Rows</option>
+                        <option value="25" class="bg-slate-900">25 Rows</option>
+                        <option value="50" class="bg-slate-900">50 Rows</option>
+                    </select>
+                </div>
+                <button @click="getStaff()" class="p-2.5 glass hover:bg-emerald-500/10 rounded-xl transition-all group">
+                    <svg :class="loading ? 'animate-spin' : ''" class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-width="2.5"></path></svg>
                 </button>
             </div>
         </div>
 
-        <div x-show="showNodes" 
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 transform -translate-y-4"
-             x-transition:enter-end="opacity-100 transform translate-y-0"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100 transform translate-y-0"
-             x-transition:leave-end="opacity-0 transform -translate-y-4"
-             class="glass rounded-3xl shadow-2xl overflow-hidden border border-emerald-500/10">
-            
+        <div class="glass rounded-3xl shadow-2xl overflow-hidden border border-emerald-500/10">
             <div class="overflow-x-auto">
-                <table class="w-full text-left table-fixed border-collapse min-w-[700px]">
+                <table class="w-full text-left table-fixed border-collapse min-w-[800px]">
                     <thead>
-                        <tr class="bg-slate-900/60 text-sky-200/40 text-[9px] uppercase font-black tracking-[0.2em] border-b border-emerald-500/10">
-                            <th class="px-8 py-5 w-[35%]">Identity Node</th>
-                            <th class="px-8 py-5 w-[25%] text-center">Position</th>
-                            <th class="px-8 py-5 w-[20%] text-center">Status</th>
-                            <th class="px-8 py-5 w-[20%] text-right">Actions</th>
+                        <tr class="bg-slate-900/60 text-sky-200/50 text-[10px] uppercase font-black tracking-[0.2em] border-b border-emerald-500/10">
+                            <th class="px-8 py-6 w-[25%]">Staff Identity</th>
+                            <th class="px-8 py-6 w-[20%]">Location</th>
+                            <th class="px-8 py-6 w-[15%] text-center">Shiff</th>
+                            <th class="px-8 py-6 w-[20%] text-center">Job & Status</th>
+                            <th class="px-8 py-6 w-[20%] text-right">
+                                <button @click="openModal('add')" class="bg-emerald-600 hover:bg-emerald-500 text-slate-950 px-5 py-2.5 rounded-xl text-[10px] font-black transition-all flex items-center gap-2 ml-auto">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-width="4"></path></svg>
+                                    NEW NODE
+                                </button>
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-emerald-500/5">
                         <template x-for="item in pagedStaffs" :key="item.id || item.Id">
                             <tr class="hover:bg-emerald-500/[0.03] transition-all group">
-                                <td class="px-8 py-4">
+                                <td class="px-8 py-5">
                                     <div class="flex items-center gap-4">
-                                        <div class="w-1.5 h-10 bg-emerald-500/20 group-hover:bg-emerald-500 rounded-full transition-all"></div>
+                                        <span class="text-sky-500 font-mono text-[10px]" x-text="item.id || item.Id"></span>
                                         <div>
                                             <div class="font-bold text-emerald-50 text-sm" x-text="item.nama || item.Nama"></div>
-                                            <div class="text-[9px] text-slate-500 uppercase font-mono" x-text="item.outlet || item.Outlet"></div>
+                                            <div class="text-[9px] text-emerald-500/60 uppercase font-black" x-text="item.posisi || item.Posisi"></div>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-8 py-4 text-center">
-                                    <span class="text-[10px] font-black text-sky-400 uppercase italic" x-text="item.posisi || item.Posisi"></span>
+                                <td class="px-8 py-5 text-slate-400 text-xs truncate" x-text="item.outlet || item.Outlet"></td>
+                                <td class="px-8 py-5 text-center">
+                                    <span class="px-3 py-1 rounded-full text-[9px] font-black border uppercase tracking-tighter"
+                                          :class="{
+                                            'bg-sky-500/10 text-sky-400 border-sky-500/20': (item.shiff || item.Shiff) === 'Pagi',
+                                            'bg-emerald-500/10 text-emerald-400 border-emerald-500/20': (item.shiff || item.Shiff) === 'Siang',
+                                            'bg-indigo-500/10 text-indigo-400 border-indigo-500/20': (item.shiff || item.Shiff) === 'Malam'
+                                          }" x-text="item.shiff || item.Shiff || '-'"></span>
                                 </td>
-                                <td class="px-8 py-4 text-center">
-                                    <span class="px-2.5 py-0.5 rounded text-[8px] font-black uppercase border" 
-                                          :class="(item.status || item.Status) === 'Aktif' ? 'bg-emerald-500 text-slate-950 border-emerald-400' : 'bg-transparent text-slate-700 border-slate-800'"
-                                          x-text="item.status || item.Status"></span>
+                                <td class="px-8 py-5 text-center">
+                                    <div class="flex flex-col items-center gap-1.5">
+                                        <span class="text-[10px] font-mono font-bold tracking-widest uppercase text-cyan-400" x-text="item.job || item.Job"></span>
+                                        <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase border" 
+                                              :class="(item.status || item.Status) === 'Aktif' ? 'bg-emerald-500 text-slate-950 border-emerald-400' : 'bg-transparent text-slate-600 border-slate-800'"
+                                              x-text="item.status || item.Status"></span>
+                                    </div>
                                 </td>
-                                <td class="px-8 py-4 text-right">
-                                    <div class="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                                        <button @click="openModal('edit', item)" class="p-2 hover:bg-sky-500/10 text-sky-400 rounded-lg"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5" stroke-width="2"></path></svg></button>
-                                        <button @click="deleteStaff(item.id || item.Id)" class="p-2 hover:bg-red-500/10 text-red-400 rounded-lg"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7" stroke-width="2"></path></svg></button>
+                                <td class="px-8 py-5 text-right">
+                                    <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                                        <button @click="openModal('edit', item)" class="p-2 hover:bg-sky-500/10 text-sky-400 rounded-lg transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-width="2"></path></svg></button>
+                                        <button @click="deleteStaff(item.id || item.Id)" class="p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2"></path></svg></button>
                                     </div>
                                 </td>
                             </tr>
@@ -113,39 +140,81 @@
                 </table>
             </div>
 
-            <div class="px-8 py-6 border-t border-emerald-500/10 bg-slate-900/40 flex justify-between items-center">
-                <div class="flex gap-1.5">
-                    <button @click="currentPage--" :disabled="currentPage === 1" class="w-9 h-9 flex items-center justify-center rounded-xl glass text-emerald-500 disabled:opacity-10">&larr;</button>
-                    <button @click="currentPage++" :disabled="currentPage === totalPages" class="w-9 h-9 flex items-center justify-center rounded-xl glass text-emerald-500 disabled:opacity-10">&rarr;</button>
-                </div>
-                <p class="text-[9px] font-mono font-black text-emerald-500/30 uppercase">Page <span x-text="currentPage" class="text-white"></span> / <span x-text="totalPages"></span></p>
-            </div>
-        </div>
+            <div class="px-6 py-6 border-t border-emerald-500/10 bg-slate-900/40 flex flex-col lg:flex-row justify-between items-center gap-6">
+                <p class="text-[10px] font-mono font-black text-emerald-500/40 uppercase tracking-[0.2em]">
+                    Showing <span x-text="startRange" class="text-white"></span> - <span x-text="endRange" class="text-white"></span> / <span x-text="staffs.length" class="text-sky-400"></span> Nodes Loaded
+                </p>
 
-        <div x-show="!showNodes" class="py-20 flex flex-col items-center justify-center border-2 border-dashed border-emerald-500/10 rounded-3xl" x-cloak>
-            <div class="w-16 h-16 rounded-full bg-slate-900 flex items-center justify-center mb-4">
-                <svg class="w-8 h-8 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-width="2"></path></svg>
+                <div class="flex items-center gap-2">
+                    <button @click="currentPage--" :disabled="currentPage === 1" class="w-10 h-10 flex items-center justify-center rounded-xl glass border-emerald-500/20 text-emerald-500 disabled:opacity-10 hover:bg-emerald-500/10 transition-all font-bold">&larr;</button>
+                    <div class="flex items-center gap-1.5 px-2">
+                        <template x-for="p in totalPages" :key="p">
+                            <button @click="currentPage = p" 
+                                    class="w-10 h-10 rounded-xl text-[10px] font-black transition-all border"
+                                    :class="currentPage === p ? 'bg-emerald-500 text-slate-950 border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'glass border-white/5 text-slate-500 hover:text-emerald-400'"
+                                    x-text="p"></button>
+                        </template>
+                    </div>
+                    <button @click="currentPage++" :disabled="currentPage === totalPages" class="w-10 h-10 flex items-center justify-center rounded-xl glass border-emerald-500/20 text-emerald-500 disabled:opacity-10 hover:bg-emerald-500/10 transition-all font-bold">&rarr;</button>
+                </div>
             </div>
-            <p class="text-slate-500 text-xs font-black uppercase tracking-widest">Node Monitoring Hidden</p>
         </div>
     </main>
 
-    <div x-show="showModal" class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/95 backdrop-blur-md" x-transition x-cloak>
-        <div class="glass w-full max-w-md rounded-3xl overflow-hidden border-emerald-500/20">
+    <div x-show="showModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md" x-transition x-cloak>
+        <div class="glass w-full max-w-md rounded-3xl overflow-hidden border-emerald-500/30">
             <div class="p-6 border-b border-emerald-500/10 flex justify-between items-center bg-emerald-950/20">
-                <h3 class="text-[10px] font-black neon-text uppercase tracking-widest" x-text="mode === 'edit' ? 'Update Entry' : 'Register New Staff'"></h3>
-                <button @click="showModal = false" class="text-emerald-500 text-3xl">&times;</button>
+                <h3 class="text-[11px] font-black neon-text uppercase tracking-widest" x-text="mode === 'edit' ? 'Update Entry' : 'Register New Node'"></h3>
+                <button @click="showModal = false" class="text-emerald-500 hover:text-white text-2xl transition-colors">&times;</button>
             </div>
-            <form @submit.prevent="saveStaff" class="p-8 space-y-4">
-                <input type="text" x-model="form.nama" placeholder="Full Name" required class="w-full input-dark rounded-xl px-5 py-4 text-sm font-bold">
-                <select x-model="form.posisi" class="w-full input-dark rounded-xl px-4 py-3 text-xs font-bold uppercase">
-                    <option value="Teknisi">Teknisi</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Frontliner">CS</option>
-                </select>
-                <input type="text" x-model="form.outlet" placeholder="Outlet Location" required class="w-full input-dark rounded-xl px-5 py-4 text-sm font-bold">
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded-xl text-[10px] font-black text-slate-950 uppercase tracking-widest transition-all">
-                    <span x-text="loading ? 'SYNCING...' : 'COMMIT CHANGES'"></span>
+            <form @submit.prevent="saveStaff" class="p-8 space-y-5">
+                <div>
+                    <label class="block text-[9px] uppercase font-black text-emerald-400/50 mb-1.5 tracking-widest">Full Name</label>
+                    <input type="text" x-model="form.nama" required class="w-full input-dark rounded-xl px-4 py-3.5 text-sm font-bold">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[9px] uppercase font-black text-emerald-400/50 mb-1.5 tracking-widest">Position</label>
+                        <select x-model="form.posisi" class="w-full input-dark rounded-xl px-3 py-3 text-xs font-bold uppercase cursor-pointer">
+                            <option value="Teknisi">Teknisi</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Frontliner">CS</option>
+                            <option value="Kepala Cabang">KACAB</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[9px] uppercase font-black text-emerald-400/50 mb-1.5 tracking-widest">Shift Cycle</label>
+                        <select x-model="form.shiff" class="w-full input-dark rounded-xl px-3 py-3 text-xs font-bold uppercase cursor-pointer">
+                            <option value="Pagi">Pagi</option>
+                            <option value="Siang">Siang</option>
+                            <option value="Malam">Malam</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[9px] uppercase font-black text-emerald-400/50 mb-1.5 tracking-widest">Node Status</label>
+                        <select x-model="form.status" class="w-full input-dark rounded-xl px-3 py-3 text-xs font-bold uppercase cursor-pointer">
+                            <option value="Aktif">Aktif</option>
+                            <option value="non aktif">Non Aktif</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[9px] uppercase font-black text-emerald-400/50 mb-1.5 tracking-widest">Specialization</label>
+                        <select x-model="form.job" class="w-full input-dark rounded-xl px-3 py-3 text-xs font-bold uppercase cursor-pointer">
+                            <option value="Mesin">Mesin</option>
+                            <option value="Interface">Interface</option>
+                            <option value="Software">Software</option>
+                            <option value="General">General</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-[9px] uppercase font-black text-emerald-400/50 mb-1.5 tracking-widest">Outlet Location</label>
+                    <input type="text" x-model="form.outlet" required class="w-full input-dark rounded-xl px-4 py-3.5 text-sm font-bold">
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 py-4.5 rounded-2xl text-[11px] font-black text-slate-950 uppercase tracking-[0.2em] shadow-lg shadow-emerald-500/20 transition-all active:scale-95">
+                    <span x-text="loading ? 'SYNCING DATA...' : 'COMMIT CHANGES'"></span>
                 </button>
             </form>
         </div>
@@ -155,13 +224,7 @@
         function staffManager() {
             return {
                 url: 'https://job.hitungnota.com/api',
-                loading: false, 
-                showModal: false, 
-                showNodes: true, // Variabel untuk x-show
-                mode: 'add', 
-                staffs: [], 
-                currentPage: 1, 
-                rowsPerPage: 10,
+                loading: false, showModal: false, mode: 'add', staffs: [], currentPage: 1, rowsPerPage: 10,
                 form: { Id: '', nama: '', outlet: 'S01 TIMORITEL MADIUN', posisi: 'Teknisi', status: 'Aktif', job: 'Mesin', shiff: 'Pagi' },
 
                 get pagedStaffs() {
@@ -169,6 +232,8 @@
                     return this.staffs.slice(start, start + parseInt(this.rowsPerPage));
                 },
                 get totalPages() { return Math.ceil(this.staffs.length / this.rowsPerPage) || 1; },
+                get startRange() { return this.staffs.length === 0 ? 0 : (this.currentPage - 1) * this.rowsPerPage + 1; },
+                get endRange() { return Math.min(this.currentPage * this.rowsPerPage, this.staffs.length); },
 
                 async call(payload) {
                     this.loading = true;
@@ -207,7 +272,7 @@
                 },
 
                 async deleteStaff(id) {
-                    if (!confirm('Hapus?')) return;
+                    if (!confirm('Execute deletion?')) return;
                     const res = await this.call({ method: 'delete', table: 'staff', params: [id] });
                     if (res) await this.getStaff();
                 }
