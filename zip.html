@@ -32,20 +32,17 @@
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-slate-900/40 p-5 rounded-2xl border border-white/5 shadow-2xl glass">
         <div class="text-center md:text-left">
             <h1 class="text-xl font-black tracking-[0.2em] uppercase italic neon-text">NODE <span class="text-white">CHAIN</span></h1>
-            <div class="flex items-center gap-2 mt-1 justify-center md:justify-start">
-                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping"></span>
-                <p class="text-[8px] text-slate-500 font-mono uppercase tracking-[0.3em]">Protocol_Active // Pulse: 1s</p>
-            </div>
+            <p class="text-[8px] text-slate-500 font-mono uppercase tracking-[0.3em] mt-1">Status: Syncing_1Hz</p>
         </div>
 
-        <div class="bg-slate-950/80 px-8 py-3 rounded-2xl border border-blue-500/20 shadow-inner">
-            <p class="text-[7px] text-blue-500 font-black uppercase tracking-[0.4em] text-center mb-1">Central System Time</p>
+        <div class="bg-slate-950/80 px-8 py-3 rounded-2xl border border-blue-500/20 shadow-inner group">
+            <p class="text-[7px] text-blue-500 font-black uppercase tracking-[0.4em] text-center mb-1 group-hover:neon-text transition-all">Central System Time</p>
             <h2 class="text-3xl font-mono font-black tracking-widest text-white" x-text="liveTime">00:00:00</h2>
         </div>
         
         <div class="hidden lg:block text-right">
-            <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Network_Status</p>
-            <p class="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-tighter">Synced_Live</p>
+            <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Network_Pool</p>
+            <p class="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-tighter">Node_24_Online</p>
         </div>
     </div>
 
@@ -56,34 +53,35 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-slate-900/80 text-slate-500 text-[8px] uppercase font-black tracking-widest border-b border-white/5">
-                        <th class="px-5 py-3 w-1/2">Data_Packet (Transaction & Antrian)</th>
-                        <th class="px-5 py-3">Timestamp</th>
-                        <th class="px-5 py-3 text-right">Node_Origin</th>
+                        <th class="px-6 py-4">Identity (Invoice/ID)</th>
+                        <th class="px-6 py-4">Queue (Antrian/Tanggal)</th>
+                        <th class="px-6 py-4 text-right">Origin</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
                     <template x-for="trans in transactions" :key="trans.id">
-                        <tr class="hover:bg-blue-600/[0.07] transition-all group">
+                        <tr class="hover:bg-blue-600/[0.07] transition-all group border-l-2 border-l-transparent hover:border-l-blue-500">
                             
-                            <td class="px-5 py-3">
-                                <div class="flex flex-col gap-1">
-                                    <span class="font-bold text-slate-200 text-[12px] font-mono tracking-tight group-hover:text-white" x-text="trans.invoice_service"></span>
-                                    
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_5px_#3b82f6]"></div>
-                                        <span class="text-[9px] font-mono font-black text-blue-400 tracking-[0.1em]" x-text="trans.nomor_antrian"></span>
-                                        <span class="text-[7px] text-slate-700 font-mono uppercase" x-text="'Hash:' + trans.id"></span>
-                                    </div>
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="font-bold text-slate-100 text-[12px] font-mono tracking-tight group-hover:text-white" x-text="trans.invoice_service"></span>
+                                    <span class="text-[8px] text-slate-600 font-mono uppercase tracking-tighter" x-text="'ID: ' + trans.id"></span>
                                 </div>
                             </td>
 
-                            <td class="px-5 py-3">
-                                <span class="text-slate-400 text-[10px] font-mono" x-text="trans.tanggal_antrian"></span>
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_5px_#3b82f6]"></div>
+                                        <span class="text-[10px] font-mono font-black text-blue-400 tracking-[0.1em]" x-text="trans.nomor_antrian"></span>
+                                    </div>
+                                    <span class="text-[9px] text-slate-500 font-mono ml-3.5" x-text="trans.tanggal_antrian"></span>
+                                </div>
                             </td>
 
-                            <td class="px-5 py-3 text-right">
-                                <div class="inline-block bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
-                                    <span class="text-[8px] text-blue-300 font-black uppercase tracking-tighter" x-text="'NODE_' + trans.id_cabang_erzap"></span>
+                            <td class="px-6 py-4 text-right">
+                                <div class="inline-block bg-blue-500/10 px-2.5 py-1 rounded border border-blue-500/20 group-hover:border-blue-500/50 transition-all">
+                                    <span class="text-[9px] text-blue-300 font-black uppercase tracking-tighter" x-text="'NODE_' + trans.id_cabang_erzap"></span>
                                 </div>
                             </td>
                         </tr>
@@ -93,9 +91,12 @@
         </div>
     </div>
 
-    <div class="mt-4 flex justify-between items-center px-2 opacity-30">
-        <p class="text-[8px] text-slate-500 font-black uppercase tracking-[0.5em]">NodeChain_Stream_v1.1</p>
-        <span class="text-[8px] text-slate-500 font-mono">LATENCY: 12ms</span>
+    <div class="mt-4 flex justify-between items-center px-2 opacity-30 font-mono text-[8px]">
+        <p class="uppercase tracking-[0.5em]">NodeChain_v1.1.2_Stable</p>
+        <div class="flex gap-4">
+            <span>METHOD: REQ_FETCH</span>
+            <span>POOL: 24</span>
+        </div>
     </div>
 </div>
 
@@ -106,9 +107,11 @@
             transactions: [],
             liveTime: '00:00:00',
             pulseWidth: 0,
+
             init() {
                 this.updateClock();
                 setInterval(() => this.updateClock(), 1000);
+                
                 this.getTrans();
                 setInterval(() => {
                     this.getTrans();
@@ -116,9 +119,11 @@
                     setTimeout(() => this.pulseWidth = 100, 50);
                 }, 1000);
             },
+
             updateClock() {
                 this.liveTime = new Date().toLocaleTimeString('en-GB', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
             },
+
             async getTrans() {
                 try {
                     const response = await fetch(this.url, {
