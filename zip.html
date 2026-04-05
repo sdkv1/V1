@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Griya Pinarak - Transaction Monitor v1</title>
+    <title>Griya Pinarak - Compact Monitor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     
     <style>
         [x-cloak] { display: none !important; }
@@ -18,97 +17,75 @@
         }
         .glass { 
             background: rgba(30, 41, 59, 0.6);
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .neon-blue { color: #3b82f6; text-shadow: 0 0 10px rgba(59, 130, 246, 0.4); }
-        .font-mono { font-family: 'Fira Code', monospace; }
-        
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .neon-blue { color: #3b82f6; text-shadow: 0 0 8px rgba(59, 130, 246, 0.4); }
+        .font-mono { font-family: 'Fira Code', monospace; font-size: 11px; }
     </style>
 </head>
-<body class="p-4 lg:p-8 min-h-screen">
+<body class="p-2 md:p-4 min-h-screen">
 
-<div class="max-w-[1200px] mx-auto w-full" x-data="transMonitor()" x-init="init()">
+<div class="max-w-[1100px] mx-auto w-full" x-data="transMonitor()" x-init="init()">
     
-    <div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
-        <div class="text-center md:text-left">
-            <h1 class="text-3xl font-black tracking-tighter uppercase italic">GRIYA <span class="neon-blue">PINARAK</span></h1>
-            <div class="flex items-center gap-2 mt-2 justify-center md:justify-start">
-                <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                <p class="text-[10px] text-slate-500 font-mono tracking-widest uppercase">Trans_Monitor v1.0 // Data Node: 24</p>
-            </div>
+    <div class="flex justify-between items-center mb-6 gap-4 bg-slate-900/50 p-4 rounded-2xl border border-white/5">
+        <div>
+            <h1 class="text-lg font-black tracking-tighter uppercase italic">GRIYA <span class="neon-blue">PINARAK</span></h1>
+            <p class="text-[9px] text-slate-500 font-mono tracking-widest uppercase">NODE_24 // SYNC: <span x-text="lastSync" class="text-blue-400"></span></p>
         </div>
         
-        <div class="flex items-center gap-4">
-            <div class="hidden md:block text-right">
-                <p class="text-[9px] text-slate-500 font-black uppercase tracking-widest">Last Updated</p>
-                <p class="text-xs font-mono text-slate-300" x-text="lastSync"></p>
-            </div>
-            <button @click="getTrans()" class="p-4 bg-blue-600/10 hover:bg-blue-600/20 rounded-2xl border border-blue-500/30 transition-all shadow-xl group" :disabled="loading">
-                <svg :class="loading ? 'animate-spin' : 'group-hover:rotate-180 transition-transform duration-500'" class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
-            </button>
+        <button @click="getTrans()" class="p-2.5 bg-blue-600/10 hover:bg-blue-600/20 rounded-xl border border-blue-500/30 transition-all shadow-lg" :disabled="loading">
+            <svg :class="loading ? 'animate-spin' : ''" class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+            </svg>
+        </button>
+    </div>
+
+    <div class="grid grid-cols-3 gap-3 mb-6">
+        <div class="glass p-3 rounded-xl border-l-2 border-l-blue-500">
+            <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Total</p>
+            <h3 class="text-lg font-black" x-text="transactions.length"></h3>
+        </div>
+        <div class="glass p-3 rounded-xl border-l-2 border-l-emerald-500">
+            <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Branch</p>
+            <h3 class="text-xs font-bold mt-1 truncate">Madiun</h3>
+        </div>
+        <div class="glass p-3 rounded-xl border-l-2 border-l-amber-500">
+            <p class="text-[8px] font-black text-slate-500 uppercase tracking-widest">Status</p>
+            <h3 class="text-[10px] font-bold text-emerald-400 uppercase mt-1">Live</h3>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-        <div class="glass p-6 rounded-[2rem] border-l-4 border-l-blue-500">
-            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Total Transactions</p>
-            <h3 class="text-3xl font-black mt-1" x-text="transactions.length"></h3>
-        </div>
-        <div class="glass p-6 rounded-[2rem] border-l-4 border-l-emerald-500">
-            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Active Branch</p>
-            <h3 class="text-3xl font-black mt-1">Madiun</h3>
-        </div>
-        <div class="glass p-6 rounded-[2rem] border-l-4 border-l-amber-500">
-            <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">System Status</p>
-            <h3 class="text-3xl font-black mt-1 text-emerald-400 uppercase text-xl">Operational</h3>
-        </div>
-    </div>
-
-    <div class="glass rounded-[2.5rem] shadow-2xl border border-white/10 overflow-hidden">
+    <div class="glass rounded-2xl shadow-xl border border-white/10 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-slate-800/50 text-slate-500 text-[10px] uppercase font-black tracking-[0.2em] border-b border-white/5">
-                        <th class="px-8 py-6">Queue Details</th>
-                        <th class="px-8 py-6">Invoice Number</th>
-                        <th class="px-8 py-6">Execution Time</th>
-                        <th class="px-8 py-6">Branch Origin</th>
+                    <tr class="bg-slate-800/80 text-slate-500 text-[9px] uppercase font-black tracking-widest border-b border-white/5">
+                        <th class="px-5 py-3 w-16">Q</th>
+                        <th class="px-5 py-3">Invoice & ID</th>
+                        <th class="px-5 py-3">Timestamp</th>
+                        <th class="px-5 py-3 text-right">Node</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
                     <template x-for="trans in transactions" :key="trans.id">
                         <tr class="hover:bg-white/[0.03] transition-all group">
-                            <td class="px-8 py-6">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center border border-white/5 group-hover:border-blue-500/30 transition-all shadow-inner">
-                                        <span class="text-blue-400 font-black text-sm" x-text="trans.nomor_antrian"></span>
-                                    </div>
-                                    <div class="flex flex-col">
-                                        <span class="text-[9px] text-slate-500 font-mono uppercase tracking-tighter" x-text="'SystemID: #' + trans.id"></span>
-                                        <span class="text-[10px] text-slate-400 font-bold uppercase" x-text="'Cat: ' + trans.id_kategori"></span>
-                                    </div>
+                            <td class="px-5 py-2.5">
+                                <div class="bg-slate-800 px-2 py-1 rounded text-center border border-white/5 group-hover:border-blue-500/50 transition-all">
+                                    <span class="text-blue-400 font-bold text-xs" x-text="trans.nomor_antrian"></span>
                                 </div>
                             </td>
-                            <td class="px-8 py-6">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_#3b82f6]"></div>
-                                    <span class="font-bold text-slate-100 text-sm font-mono tracking-tight" x-text="trans.invoice_service"></span>
-                                </div>
-                            </td>
-                            <td class="px-8 py-6">
-                                <span class="text-slate-400 text-xs font-medium" x-text="trans.tanggal_antrian"></span>
-                            </td>
-                            <td class="px-8 py-6">
+                            <td class="px-5 py-2.5">
                                 <div class="flex flex-col">
-                                    <span class="text-xs text-slate-200 font-bold" x-text="trans.nama_cabang"></span>
-                                    <span class="text-[9px] text-slate-600 font-black uppercase tracking-[0.2em]" x-text="'Node_' + trans.id_cabang_erzap"></span>
+                                    <span class="font-bold text-slate-100 text-xs font-mono" x-text="trans.invoice_service"></span>
+                                    <span class="text-[8px] text-slate-600 font-mono" x-text="'ID:' + trans.id"></span>
+                                </div>
+                            </td>
+                            <td class="px-5 py-2.5 text-slate-400 text-[10px]" x-text="trans.tanggal_antrian"></td>
+                            <td class="px-5 py-2.5 text-right">
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] text-slate-300 font-bold" x-text="trans.nama_cabang"></span>
+                                    <span class="text-[8px] text-slate-600 font-black uppercase" x-text="'N_' + trans.id_cabang_erzap"></span>
                                 </div>
                             </td>
                         </tr>
@@ -116,34 +93,11 @@
                 </tbody>
             </table>
         </div>
-
-        <template x-if="transactions.length === 0 && !loading">
-            <div class="py-32 text-center">
-                <div class="inline-flex p-6 rounded-full bg-slate-800/50 mb-4">
-                    <svg class="w-12 h-12 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                    </svg>
-                </div>
-                <h4 class="text-slate-500 font-mono text-xs uppercase tracking-[0.4em]">Waiting for Data Stream...</h4>
-            </div>
-        </template>
-
-        <template x-if="loading && transactions.length === 0">
-            <div class="py-32 text-center">
-                <div class="flex justify-center mb-4">
-                    <div class="w-8 h-8 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
-                </div>
-                <p class="text-slate-500 font-mono text-[10px] uppercase tracking-widest">Fetching Nodes...</p>
-            </div>
-        </template>
     </div>
 
-    <div class="mt-8 flex justify-between items-center px-4">
-        <p class="text-[9px] text-slate-600 font-black uppercase tracking-[0.3em]">© 2026 Griya Pinarak Internal</p>
-        <div class="flex items-center gap-4 text-[9px] text-slate-600 font-black uppercase tracking-widest">
-            <span>Server: <span class="text-emerald-500">Online</span></span>
-            <span>Latency: <span class="text-blue-400">24ms</span></span>
-        </div>
+    <div class="mt-4 flex justify-between items-center px-2 opacity-50">
+        <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">© 2026 GP-CORE</p>
+        <span class="text-[8px] text-slate-500 font-mono uppercase">System_Active: True</span>
     </div>
 </div>
 
@@ -154,42 +108,22 @@
             loading: false,
             transactions: [],
             lastSync: '--:--',
-
-            init() {
-                this.getTrans();
-                // Auto refresh every 60 seconds
-                setInterval(() => this.getTrans(), 60000);
-            },
-
+            init() { this.getTrans(); setInterval(() => this.getTrans(), 60000); },
             async getTrans() {
                 this.loading = true;
                 try {
                     const response = await fetch(this.url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            method: 'fetch', 
-                            table: 'trans', 
-                            params: [24] 
-                        })
+                        body: JSON.stringify({ method: 'fetch', table: 'transaksi', params: [24] })
                     });
                     const res = await response.json();
-                    
                     if (res && res.data) {
-                        // Memastikan data selalu dalam bentuk array
                         this.transactions = Array.isArray(res.data) ? res.data : [res.data];
-                        
-                        // Update timestamp sinkronisasi
                         const now = new Date();
-                        this.lastSync = now.getHours().toString().padStart(2, '0') + ':' + 
-                                        now.getMinutes().toString().padStart(2, '0') + ':' + 
-                                        now.getSeconds().toString().padStart(2, '0');
+                        this.lastSync = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
                     }
-                } catch (err) {
-                    console.error('Fetch Error:', err);
-                } finally {
-                    this.loading = false;
-                }
+                } catch (err) { console.error(err); } finally { this.loading = false; }
             }
         }
     }
