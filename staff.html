@@ -3,26 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff Management v1 - Cyber Emerald</title>
+    <title>Staff Management v1 - Color Surgery</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
     <style>
         [x-cloak] { display: none !important; }
-        /* Background Deep Blue Slate */
         body { background-color: #020617; color: #ecfdf5; font-family: 'Inter', sans-serif; }
-        .glass { 
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(16, 185, 129, 0.1);
-        }
-        /* Neon Emerald */
+        .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(16, 185, 129, 0.1); }
         .neon-text { color: #10b981; text-shadow: 0 0 12px rgba(16, 185, 129, 0.4); }
-        .input-dark {
-            background: rgba(2, 6, 23, 0.8);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            color: #f0fdf4;
-        }
+        .input-dark { background: rgba(2, 6, 23, 0.8); border: 1px solid rgba(16, 185, 129, 0.2); color: #f0fdf4; }
         .input-dark:focus { border-color: #10b981; outline: none; box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2); }
     </style>
 </head>
@@ -30,77 +19,86 @@
 
 <div class="max-w-[1400px] mx-auto w-full" x-data="staffManager()" x-init="getStaff()">
     
-    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-        <div class="text-center md:text-left">
-            <h2 class="text-2xl font-black neon-text uppercase tracking-tighter">Staff Monitoring <span class="text-sky-400">v1</span></h2>
-            <p class="text-[10px] text-emerald-500/60 font-mono mt-1">> CORE_SYSTEM: <span x-text="staffs.length" class="text-emerald-400"></span> NODES CONNECTED</p>
+    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <div>
+            <h2 class="text-2xl font-black neon-text uppercase tracking-tighter italic">Staff System <span class="text-sky-400">v1</span></h2>
+            <div class="flex items-center gap-2 mt-1">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <p class="text-[10px] text-emerald-500/60 font-mono uppercase tracking-widest">Database Node: <span x-text="staffs.length"></span> Active</p>
+            </div>
         </div>
         
-        <div class="flex flex-wrap justify-center gap-3 w-full md:w-auto">
-            <div class="flex items-center gap-2 bg-slate-900/50 px-3 py-2 rounded-xl border border-emerald-500/10 shadow-inner">
-                <span class="text-[9px] text-emerald-300/50 font-black uppercase tracking-widest">Rows:</span>
-                <select x-model="rowsPerPage" @change="currentPage = 1" class="bg-transparent text-xs text-emerald-400 outline-none font-bold cursor-pointer">
-                    <option value="10" class="bg-slate-900">10</option>
-                    <option value="25" class="bg-slate-900">25</option>
-                    <option value="50" class="bg-slate-900">50</option>
-                </select>
-            </div>
-
-            <button @click="getStaff()" class="p-3 bg-emerald-900/10 hover:bg-emerald-800/20 rounded-xl border border-emerald-500/20 transition-all group" :disabled="loading">
-                <svg :class="loading ? 'animate-spin' : ''" class="w-5 h-5 text-emerald-500 group-hover:text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        <div class="flex gap-3">
+            <button @click="getStaff()" class="p-3 glass hover:bg-emerald-500/10 rounded-xl transition-all" :disabled="loading">
+                <svg :class="loading ? 'animate-spin' : ''" class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
             </button>
-            
-            <button @click="openModal('add')" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-black rounded-xl transition-all shadow-lg shadow-emerald-900/40 text-xs tracking-widest uppercase">
-                + Tambah Staff
+            <button @click="openModal('add')" class="px-8 py-3 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black rounded-xl transition-all shadow-lg shadow-emerald-500/20 text-xs tracking-widest uppercase">
+                Add New Staff
             </button>
         </div>
     </div>
 
-    <div class="glass rounded-3xl shadow-2xl overflow-hidden">
+    <div class="glass rounded-3xl shadow-2xl overflow-hidden border border-white/5">
         <div class="hidden md:block">
             <table class="w-full text-left table-fixed border-collapse">
                 <thead>
-                    <tr class="bg-slate-900/60 text-sky-200/50 text-[10px] uppercase font-black tracking-[0.2em] border-b border-emerald-500/10">
-                        <th class="px-8 py-5 w-[25%]">Staff Identity</th>
-                        <th class="px-8 py-5 w-[20%]">Location</th>
-                        <th class="px-8 py-5 w-[15%] text-center">Shiff</th>
-                        <th class="px-8 py-5 w-[20%] text-center">Status & Role</th>
-                        <th class="px-8 py-5 w-[20%] text-right">Action</th>
+                    <tr class="bg-slate-900/80 text-emerald-500/50 text-[10px] uppercase font-black tracking-[0.2em] border-b border-white/5">
+                        <th class="px-8 py-5 w-[25%]">Identity</th>
+                        <th class="px-8 py-5 w-[20%]">Outlet</th>
+                        <th class="px-8 py-5 w-[15%] text-center">Shiff Context</th>
+                        <th class="px-8 py-5 w-[20%] text-center">Status & Specialty</th>
+                        <th class="px-8 py-5 w-[20%] text-right">Control</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-emerald-500/5">
+                <tbody class="divide-y divide-white/5">
                     <template x-for="item in pagedStaffs" :key="item.id || item.Id">
-                        <tr class="hover:bg-emerald-500/[0.03] transition-all">
+                        <tr class="hover:bg-sky-500/[0.02] transition-all group">
                             <td class="px-8 py-5">
                                 <div class="flex items-center gap-4">
                                     <span class="text-sky-500 font-mono text-[10px]" x-text="item.id || item.Id"></span>
-                                    <div class="min-w-0">
-                                        <div class="font-bold text-emerald-50 text-sm truncate" x-text="item.nama || item.Nama"></div>
-                                        <div class="text-[9px] text-emerald-500/60 uppercase font-black" x-text="item.posisi || item.Posisi"></div>
+                                    <div>
+                                        <div class="font-bold text-emerald-50 text-sm" x-text="item.nama || item.Nama"></div>
+                                        <div class="text-[9px] text-slate-500 uppercase font-black" x-text="item.posisi || item.Posisi"></div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-8 py-5">
-                                <div class="text-slate-400 text-xs truncate" x-text="item.outlet || item.Outlet"></div>
-                            </td>
+                            <td class="px-8 py-5 text-slate-400 text-xs" x-text="item.outlet || item.Outlet"></td>
+                            
                             <td class="px-8 py-5 text-center">
-                                <span class="px-2 py-1 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20 text-[9px] font-bold uppercase" x-text="item.shiff || item.Shiff || '-'"></span>
+                                <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase border"
+                                      :class="{
+                                        'bg-sky-500/10 text-sky-400 border-sky-500/20': (item.shiff || item.Shiff) === 'Pagi',
+                                        'bg-emerald-500/10 text-emerald-400 border-emerald-500/20': (item.shiff || item.Shiff) === 'Siang',
+                                        'bg-indigo-500/10 text-indigo-400 border-indigo-500/20': (item.shiff || item.Shiff) === 'Malam'
+                                      }"
+                                      x-text="item.shiff || item.Shiff || '-'"></span>
                             </td>
+
                             <td class="px-8 py-5 text-center">
-                                <div class="flex flex-col items-center gap-1">
-                                    <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase border" 
-                                          :class="(item.status || item.Status) === 'Aktif' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500' : 'bg-transparent text-slate-600 border-slate-800'"
+                                <div class="flex flex-col items-center gap-1.5">
+                                    <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase border transition-all" 
+                                          :class="(item.status || item.Status) === 'Aktif' 
+                                                  ? 'bg-emerald-500 text-slate-950 border-emerald-400' 
+                                                  : 'bg-transparent text-slate-600 border-slate-800'"
                                           x-text="item.status || item.Status"></span>
-                                    <span class="text-[9px] text-sky-400 font-mono font-bold" x-text="item.job || item.Job"></span>
+                                    <span class="text-[9px] font-mono font-bold tracking-tighter"
+                                          :class="{
+                                            'text-cyan-400': (item.job || item.Job) === 'Mesin',
+                                            'text-pink-400': (item.job || item.Job) === 'Interface',
+                                            'text-purple-400': (item.job || item.Job) === 'Software',
+                                            'text-amber-400': (item.job || item.Job) === 'General'
+                                          }"
+                                          x-text="item.job || item.Job"></span>
                                 </div>
                             </td>
+
                             <td class="px-8 py-5 text-right">
-                                <div class="flex justify-end gap-2">
-                                    <button @click="openModal('edit', item)" class="p-2 hover:bg-sky-500/10 text-sky-400 rounded-lg transition-colors">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button @click="openModal('edit', item)" class="p-2 hover:bg-sky-500/20 text-sky-400 rounded-lg transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-width="2"></path></svg>
                                     </button>
-                                    <button @click="deleteStaff(item.id || item.Id)" class="p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    <button @click="deleteStaff(item.id || item.Id)" class="p-2 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2"></path></svg>
                                     </button>
                                 </div>
                             </td>
@@ -110,63 +108,30 @@
             </table>
         </div>
 
-        <div class="block md:hidden divide-y divide-emerald-500/5">
-            <template x-for="item in pagedStaffs" :key="item.id || item.Id">
-                <div class="p-5">
-                    <div class="flex justify-between items-start mb-3">
-                        <div class="flex gap-3">
-                            <div class="w-9 h-9 rounded-lg bg-emerald-950/50 border border-emerald-500/20 flex items-center justify-center font-mono text-emerald-500 text-xs" x-text="item.id || item.Id"></div>
-                            <div>
-                                <h4 class="font-bold text-emerald-50 text-sm" x-text="item.nama || item.Nama"></h4>
-                                <p class="text-[9px] text-sky-400 uppercase font-black" x-text="item.posisi || item.Posisi"></p>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                             <span class="block text-[10px] font-bold text-emerald-400" x-text="item.shiff || '-'"></span>
-                             <span class="text-[8px] text-slate-500 uppercase" x-text="item.status || item.Status"></span>
-                        </div>
-                    </div>
-                    <div class="flex gap-2 mt-4">
-                         <button @click="openModal('edit', item)" class="flex-1 py-2.5 bg-sky-500/10 text-sky-400 rounded-xl text-[10px] font-black uppercase tracking-widest border border-sky-500/20">Edit</button>
-                         <button @click="deleteStaff(item.id || item.Id)" class="flex-1 py-2.5 bg-red-500/10 text-red-400 rounded-xl text-[10px] font-black uppercase tracking-widest border border-red-500/20">Hapus</button>
-                    </div>
-                </div>
-            </template>
-        </div>
-
-        <div class="px-6 py-4 border-t border-emerald-500/10 bg-slate-900/30 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="text-[10px] font-mono text-emerald-300/40 uppercase tracking-widest font-black">
-                Displaying <span class="text-emerald-500" x-text="startRange"></span> - <span class="text-emerald-500" x-text="endRange"></span> 
-                of <span class="text-sky-400" x-text="staffs.length"></span> Nodes
-            </div>
-            <div class="flex items-center gap-2">
-                <button @click="currentPage--" :disabled="currentPage === 1" class="w-8 h-8 flex items-center justify-center bg-slate-800 rounded-lg border border-emerald-500/20 disabled:opacity-20 text-emerald-500 hover:bg-emerald-500/10 transition-all">
-                    &larr;
-                </button>
-                <div class="px-4 py-1.5 bg-slate-950 rounded-lg border border-emerald-500/10 text-[10px] font-bold text-sky-100">
-                    <span x-text="currentPage"></span> / <span x-text="totalPages" class="text-emerald-500"></span>
-                </div>
-                <button @click="currentPage++" :disabled="currentPage === totalPages" class="w-8 h-8 flex items-center justify-center bg-slate-800 rounded-lg border border-emerald-500/20 disabled:opacity-20 text-emerald-500 hover:bg-emerald-500/10 transition-all">
-                    &rarr;
-                </button>
+        <div class="px-6 py-4 bg-slate-900/40 flex justify-between items-center">
+            <p class="text-[10px] font-mono text-slate-500 uppercase">Nodes <span class="text-emerald-500" x-text="startRange"></span>-<span class="text-emerald-500" x-text="endRange"></span> of <span x-text="staffs.length"></span></p>
+            <div class="flex items-center gap-1">
+                <button @click="currentPage--" :disabled="currentPage === 1" class="p-2 disabled:opacity-20 text-emerald-500">&larr;</button>
+                <span class="text-xs font-bold font-mono text-sky-400" x-text="currentPage"></span>
+                <button @click="currentPage++" :disabled="currentPage === totalPages" class="p-2 disabled:opacity-20 text-emerald-500">&rarr;</button>
             </div>
         </div>
     </div>
-    
-    <div x-show="showModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md" x-transition x-cloak>
-        <div class="glass w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border-emerald-500/30">
-            <div class="p-6 border-b border-emerald-500/10 flex justify-between items-center bg-emerald-950/20">
-                <h3 class="text-sm font-black neon-text uppercase tracking-widest" x-text="mode === 'edit' ? 'Synchronize Node' : 'Register New Node'"></h3>
-                <button @click="showModal = false" class="text-emerald-500 hover:text-white text-2xl transition-colors">&times;</button>
+
+    <div x-show="showModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/95 backdrop-blur-sm" x-transition x-cloak>
+        <div class="glass w-full max-w-md rounded-3xl overflow-hidden border-emerald-500/20">
+            <div class="p-6 bg-emerald-500/5 flex justify-between items-center border-b border-white/5">
+                <h3 class="text-xs font-black neon-text uppercase tracking-[0.2em]" x-text="mode === 'edit' ? 'Update Entry' : 'New Registration'"></h3>
+                <button @click="showModal = false" class="text-emerald-500 text-2xl">&times;</button>
             </div>
             <form @submit.prevent="saveStaff" class="p-6 space-y-4">
                 <div>
-                    <label class="block text-[9px] uppercase font-black text-emerald-400/50 mb-1">Full Name</label>
-                    <input type="text" x-model="form.nama" required class="w-full input-dark rounded-xl px-4 py-2.5 text-sm font-bold">
+                    <label class="block text-[9px] uppercase font-black text-slate-500 mb-1">Full Name</label>
+                    <input type="text" x-model="form.nama" required class="w-full input-dark rounded-xl px-4 py-3 text-sm font-bold">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[9px] uppercase font-black text-emerald-400/50 mb-1">Position</label>
+                        <label class="block text-[9px] uppercase font-black text-slate-500 mb-1">Position</label>
                         <select x-model="form.posisi" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold uppercase">
                             <option value="Teknisi">Teknisi</option>
                             <option value="Admin">Admin</option>
@@ -175,24 +140,24 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[9px] uppercase font-black text-emerald-400/50 mb-1">Shiff Rotation</label>
+                        <label class="block text-[9px] uppercase font-black text-slate-500 mb-1">Shiff</label>
                         <select x-model="form.shiff" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold uppercase">
-                            <option value="Pagi">Pagi</option>
-                            <option value="Siang">Siang</option>
-                            <option value="Malam">Malam</option>
+                            <option value="Pagi">Pagi (AM)</option>
+                            <option value="Siang">Siang (PM)</option>
+                            <option value="Malam">Malam (NT)</option>
                         </select>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[9px] uppercase font-black text-emerald-400/50 mb-1">Node Status</label>
+                        <label class="block text-[9px] uppercase font-black text-slate-500 mb-1">Status</label>
                         <select x-model="form.status" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold uppercase">
                             <option value="Aktif">Aktif</option>
                             <option value="non aktif">Non Aktif</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[9px] uppercase font-black text-emerald-400/50 mb-1">Job Context</label>
+                        <label class="block text-[9px] uppercase font-black text-slate-500 mb-1">Specialization</label>
                         <select x-model="form.job" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold uppercase">
                             <option value="Mesin">Mesin</option>
                             <option value="Interface">Interface</option>
@@ -201,15 +166,9 @@
                         </select>
                     </div>
                 </div>
-                <div>
-                    <label class="block text-[9px] uppercase font-black text-emerald-400/50 mb-1">Assigned Outlet</label>
-                    <input type="text" x-model="form.outlet" required class="w-full input-dark rounded-xl px-4 py-2.5 text-sm font-bold">
-                </div>
-                <div class="flex justify-end gap-3 pt-4">
-                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 py-3.5 rounded-xl text-xs font-black text-white uppercase tracking-widest shadow-lg shadow-emerald-900/40 transition-all">
-                        <span x-text="loading ? 'PROCESSING...' : 'EXECUTE DATA'"></span>
-                    </button>
-                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl text-[10px] font-black text-slate-950 uppercase tracking-widest shadow-lg shadow-emerald-500/20 transition-all">
+                    <span x-text="loading ? 'Syncing...' : 'Save Database Entry'"></span>
+                </button>
             </form>
         </div>
     </div>
@@ -239,7 +198,7 @@
                         body: JSON.stringify(payload)
                     });
                     return await response.json();
-                } catch (err) { alert('Network Error: ' + err.message); return null; } finally { this.loading = false; }
+                } catch (err) { alert('Err: ' + err.message); return null; } finally { this.loading = false; }
             },
 
             async getStaff() {
@@ -273,7 +232,7 @@
             },
 
             async deleteStaff(id) {
-                if (!confirm('Hapus data node ini?')) return;
+                if (!confirm('Hapus data node?')) return;
                 const res = await this.call({ method: 'delete', table: 'staff', params: [id] });
                 if (res) await this.getStaff();
             }
