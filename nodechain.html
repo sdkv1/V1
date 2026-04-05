@@ -3,88 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NODE CHAIN - Light Interface</title>
+    <title>NODE CHAIN - Orange Blue Interface</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         [x-cloak] { display: none !important; }
         body { 
-            background-color: #f8fafc; 
-            color: #1e293b; 
+            background-color: #030a1a; /* Sangat Gelap Biru */
+            color: #e0e7ff; /* Indigo Sangat Muda untuk Teks Default */
             font-family: 'Inter', sans-serif;
-            background-image: radial-gradient(circle at 50% -20%, #e2e8f0 0%, #f8fafc 80%);
+            background-image: radial-gradient(circle at 50% -20%, #112a52 0%, #030a1a 85%);
             overflow-x: hidden;
         }
         .glass { 
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 0, 0, 0.05);
+            background: rgba(5, 14, 33, 0.7); /* Latar Card Biru Hitam */
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(56, 189, 248, 0.06); /* Border Biru Langit Sangat Halus */
         }
-        .neon-text { color: #4f46e5; text-shadow: 0 0 10px rgba(79, 70, 229, 0.2); }
+        .neon-text-orange { color: #fb923c; text-shadow: 0 0 15px rgba(251, 146, 60, 0.5); }
         .font-mono { font-family: 'Fira Code', monospace; }
-        .bg-grid { background-size: 30px 30px; background-image: linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px); }
+        .bg-grid { background-size: 25px 25px; background-image: linear-gradient(to right, rgba(56, 189, 248, 0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(56, 189, 248, 0.02) 1px, transparent 1px); }
     </style>
 </head>
 <body class="p-2 md:p-4 min-h-screen bg-grid">
 
 <div class="max-w-[1000px] mx-auto w-full" x-data="nodeChain()" x-init="init()">
     
-    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-white/80 p-5 rounded-2xl border border-slate-200 shadow-xl glass">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 p-5 rounded-2xl shadow-2xl glass border border-sky-900/50">
         <div class="text-center md:text-left">
-            <h1 class="text-xl font-black tracking-[0.2em] uppercase italic neon-text">NODE <span class="text-slate-900">CHAIN</span></h1>
+            <h1 class="text-xl font-black tracking-[0.2em] uppercase italic neon-text-orange">NODE <span class="text-sky-400">CHAIN</span></h1>
             <div class="flex items-center gap-2 mt-1 justify-center md:justify-start">
                 <span class="relative flex h-2 w-2">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-600"></span>
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
                 </span>
-                <p class="text-[9px] text-indigo-600 font-mono uppercase tracking-[0.2em]">System_Online // Live_Sync</p>
+                <p class="text-[9px] text-orange-400 font-mono uppercase tracking-[0.2em]">System_Online // Orange_Blue_Sync</p>
             </div>
         </div>
 
-        <div class="bg-white px-8 py-3 rounded-2xl border border-slate-200 shadow-sm">
-            <p class="text-[7px] text-slate-400 font-black uppercase tracking-[0.4em] text-center mb-1">Central System Time</p>
-            <h2 class="text-3xl font-mono font-black tracking-widest text-slate-800" x-text="liveTime">00:00:00</h2>
+        <div class="bg-black/40 px-8 py-3 rounded-2xl border border-sky-800/30 shadow-inner">
+            <p class="text-[7px] text-sky-500 font-black uppercase tracking-[0.4em] text-center mb-1">Central System Time</p>
+            <h2 class="text-3xl font-mono font-black tracking-widest text-sky-100" x-text="liveTime">00:00:00</h2>
         </div>
         
         <div class="hidden lg:block text-right">
-            <p class="text-[8px] text-slate-400 font-black uppercase tracking-widest">Page_Status</p>
-            <p class="text-[10px] font-mono text-indigo-600 font-bold uppercase tracking-tighter" x-text="`Page ${page} / ${totalPages}`"></p>
+            <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Page_Status</p>
+            <p class="text-[10px] font-mono text-orange-400 font-bold uppercase tracking-tighter" x-text="`Page ${page} / ${totalPages}`"></p>
         </div>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden relative">
-        <div class="absolute top-0 left-0 h-[2px] bg-indigo-500 transition-all duration-1000 ease-linear" :style="'width: ' + pulseWidth + '%'"></div>
+    <div class="rounded-2xl shadow-3xl border border-sky-900/50 overflow-hidden relative glass">
+        <div class="absolute top-0 left-0 h-[1px] bg-orange-500 transition-all duration-1000 ease-linear" :style="'width: ' + pulseWidth + '%'"></div>
 
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-slate-50 text-slate-500 text-[8px] uppercase font-black tracking-widest border-b border-slate-100">
+                    <tr class="bg-black/30 text-slate-500 text-[8px] uppercase font-black tracking-widest border-b border-sky-950">
                         <th class="px-6 py-4 w-1/3">Reference (Antrian/ID)</th>
                         <th class="px-6 py-4">Transaction (Invoice/Tanggal)</th>
                         <th class="px-6 py-4 text-right">Origin</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-50">
+                <tbody class="divide-y divide-sky-950/50">
                     <template x-for="trans in pagedTransactions()" :key="trans.id">
-                        <tr class="hover:bg-slate-50 transition-all group border-l-2 border-l-transparent hover:border-l-indigo-500">
+                        <tr class="hover:bg-sky-950/40 transition-all group border-l-2 border-l-transparent hover:border-l-orange-500">
                             <td class="px-6 py-4">
                                 <div class="flex flex-col gap-1">
                                     <div class="flex items-center gap-2">
-                                        <div class="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
-                                        <span class="text-[11px] font-mono font-black text-indigo-600 tracking-[0.1em]" x-text="trans.nomor_antrian"></span>
+                                        <div class="w-1.5 h-1.5 rounded-full bg-orange-500 shadow-[0_0_5px_#f97316]"></div>
+                                        <span class="text-[11px] font-mono font-black text-orange-400 tracking-[0.1em]" x-text="trans.nomor_antrian"></span>
                                     </div>
-                                    <span class="text-[8px] text-slate-400 font-mono uppercase tracking-widest ml-3.5" x-text="'SYS_ID: ' + trans.id"></span>
+                                    <span class="text-[8px] text-slate-600 font-mono uppercase tracking-widest ml-3.5" x-text="'SYS_ID: ' + trans.id"></span>
                                 </div>
                             </td>
                             <td class="px-6 py-4">
                                 <div class="flex flex-col gap-0.5">
-                                    <span class="font-bold text-slate-800 text-[12px] font-mono tracking-tight" x-text="trans.invoice_service"></span>
-                                    <span class="text-slate-400 font-mono text-[9px]" x-text="trans.tanggal_antrian"></span>
+                                    <span class="font-bold text-indigo-100 text-[12px] font-mono tracking-tight group-hover:text-white" x-text="trans.invoice_service"></span>
+                                    <span class="text-slate-500 font-mono text-[9px]" x-text="trans.tanggal_antrian"></span>
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-right">
-                                <div class="inline-block bg-slate-100 px-2.5 py-1 rounded border border-slate-200">
-                                    <span class="text-[9px] text-slate-600 font-black uppercase tracking-tighter" x-text="'NODE_' + trans.id_cabang_erzap"></span>
+                                <div class="inline-block bg-sky-950/70 px-2.5 py-1 rounded border border-sky-800/50">
+                                    <span class="text-[9px] text-sky-300 font-black uppercase tracking-tighter" x-text="'NODE_' + trans.id_cabang_erzap"></span>
                                 </div>
                             </td>
                         </tr>
@@ -93,17 +93,17 @@
             </table>
         </div>
 
-        <div class="p-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
-            <span class="text-[9px] font-mono text-slate-400 uppercase tracking-widest" x-text="`Total_Pool: ${transactions.length}`"></span>
+        <div class="p-4 bg-black/20 border-t border-sky-950 flex justify-between items-center">
+            <span class="text-[9px] font-mono text-slate-600 uppercase tracking-widest" x-text="`Total_Pool: ${transactions.length}`"></span>
             <div class="flex gap-2">
-                <button @click="prevPage()" :disabled="page === 1" class="px-4 py-1.5 bg-white hover:bg-white shadow-sm disabled:opacity-40 rounded-lg border border-slate-200 text-[9px] font-black uppercase tracking-widest transition-all">Prev</button>
-                <button @click="nextPage()" :disabled="page >= totalPages" class="px-4 py-1.5 bg-white hover:bg-white shadow-sm disabled:opacity-40 rounded-lg border border-slate-200 text-[9px] font-black uppercase tracking-widest transition-all">Next</button>
+                <button @click="prevPage()" :disabled="page === 1" class="px-4 py-1.5 bg-sky-950/50 hover:bg-sky-900 disabled:opacity-20 rounded-lg border border-sky-800/50 text-[9px] text-sky-100 font-black uppercase tracking-widest transition-all">Prev</button>
+                <button @click="nextPage()" :disabled="page >= totalPages" class="px-4 py-1.5 bg-sky-950/50 hover:bg-sky-900 disabled:opacity-20 rounded-lg border border-sky-800/50 text-[9px] text-sky-100 font-black uppercase tracking-widest transition-all">Next</button>
             </div>
         </div>
     </div>
 
-    <div class="mt-4 flex justify-between items-center px-2 opacity-50 font-mono text-[8px] text-slate-600">
-        <p class="uppercase tracking-[0.5em]">NodeChain_v1.2.5_Stable</p>
+    <div class="mt-4 flex justify-between items-center px-2 opacity-30 font-mono text-[8px] text-slate-500">
+        <p class="uppercase tracking-[0.5em]">NodeChain_v1.2.5_Ob</p>
         <div class="flex gap-4">
             <span>SYNC: 1HZ</span>
             <span x-text="`LIMIT: ${perPage}_PER_PAGE` "></span>
@@ -119,6 +119,7 @@
             liveTime: '00:00:00',
             pulseWidth: 0,
             
+            // Paging Settings
             page: 1,
             perPage: 10, 
             totalPages: 1,
@@ -128,6 +129,7 @@
                 setInterval(() => this.updateClock(), 1000);
                 
                 this.getTrans();
+                // Bar Progres Sinkronisasi (Oranye)
                 setInterval(() => {
                     this.getTrans();
                     this.pulseWidth = 0;
@@ -157,7 +159,10 @@
                     const res = await response.json();
                     if (res && res.data) {
                         let rawData = Array.isArray(res.data) ? res.data : [res.data];
+                        
+                        // Sorting: Terbaru di atas
                         this.transactions = rawData.sort((a, b) => b.id - a.id);
+                        
                         this.totalPages = Math.max(1, Math.ceil(this.transactions.length / this.perPage));
                     }
                 } catch (err) { console.error('Sync error'); }
