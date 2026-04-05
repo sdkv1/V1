@@ -41,16 +41,17 @@
             </div>
         </div>
 
-<div class="bg-slate-50 px-5 py-2.5 rounded-2xl border border-orange-100 shadow-sm flex flex-col items-center justify-center min-w-[180px]">
-    <p class="text-[7px] text-orange-400 font-black uppercase tracking-[0.3em] mb-1">System_Clock</p>
+<div class="bg-slate-50 px-5 py-2.5 rounded-2xl border border-orange-100 shadow-sm flex flex-col items-center justify-center min-w-[160px]">
+    <p class="text-[7px] text-orange-400 font-black uppercase tracking-[0.3em] mb-1">Live_Sync</p>
+    
+    <p class="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-[0.1em]" x-text="liveDate">05 APR 2026</p>
     
     <div class="flex items-baseline gap-0.5">
-        <h2 class="text-2xl font-mono font-black tracking-tight text-slate-800" x-text="liveTime">00:00</h2>
-        <span class="text-sm font-mono font-bold text-orange-500 w-[24px]" x-text="liveSeconds">:00</span>
+        <h2 class="text-xl font-mono font-black tracking-tight text-slate-800" x-text="liveTime">00:00</h2>
+        <span class="text-xs font-mono font-bold text-orange-500 w-[20px]" x-text="liveSeconds">:00</span>
     </div>
-
-    <p class="text-[8px] font-mono font-medium text-slate-400 mt-0.5 uppercase tracking-wider" x-text="liveDate">05 APR 2026</p>
 </div>
+
 
         
         <div class="hidden lg:block text-right">
