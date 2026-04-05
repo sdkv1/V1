@@ -3,24 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff Management v1 - Advanced Paging</title>
+    <title>Staff Management v1 - Sunset Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
     <style>
         [x-cloak] { display: none !important; }
-        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        /* Background dibuat sedikit lebih hangat cokelat-hitam */
+        body { background-color: #1a1614; color: #fff7ed; font-family: 'Inter', sans-serif; }
         .glass { 
-            background: rgba(30, 41, 59, 0.7);
+            background: rgba(45, 34, 25, 0.7);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 180, 100, 0.1);
         }
-        .neon-text { color: #22c55e; text-shadow: 0 0 10px rgba(34, 197, 94, 0.3); }
+        /* Neon Oren */
+        .neon-text { color: #f59e0b; text-shadow: 0 0 12px rgba(245, 158, 11, 0.4); }
         .input-dark {
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(20, 15, 10, 0.9);
+            border: 1px solid rgba(251, 191, 36, 0.2);
             color: white;
         }
+        .input-dark:focus { border-color: #f59e0b; outline: none; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2); }
     </style>
 </head>
 <body class="p-4 lg:p-8">
@@ -30,72 +33,75 @@
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <div class="text-center md:text-left">
             <h2 class="text-2xl font-black neon-text uppercase tracking-tighter">Staff Monitoring <span class="text-white">v1</span></h2>
-            <p class="text-[10px] text-slate-500 font-mono mt-1">> SYSTEM_READY: <span x-text="staffs.length"></span> NODES FOUND</p>
+            <p class="text-[10px] text-orange-400/60 font-mono mt-1">> AMBER_CORE: <span x-text="staffs.length"></span> NODES ACTIVE</p>
         </div>
         
         <div class="flex flex-wrap justify-center gap-3 w-full md:w-auto">
-            <div class="flex items-center gap-2 bg-slate-800/50 px-3 py-2 rounded-xl border border-white/5 shadow-inner">
-                <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest">Rows per page:</span>
-                <select x-model="rowsPerPage" @change="currentPage = 1" class="bg-transparent text-xs text-green-400 outline-none font-bold cursor-pointer">
+            <div class="flex items-center gap-2 bg-orange-950/30 px-3 py-2 rounded-xl border border-orange-500/10 shadow-inner">
+                <span class="text-[9px] text-orange-300/50 font-black uppercase tracking-widest">Rows:</span>
+                <select x-model="rowsPerPage" @change="currentPage = 1" class="bg-transparent text-xs text-orange-400 outline-none font-bold cursor-pointer">
                     <option value="10">10</option>
                     <option value="25">25</option>
                     <option value="50">50</option>
-                    <option value="100">100</option>
                 </select>
             </div>
 
-            <button @click="getStaff()" class="p-3 bg-slate-800 hover:bg-slate-700 rounded-xl border border-slate-700 transition-all shadow-xl" :disabled="loading">
-                <svg :class="loading ? 'animate-spin' : ''" class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            <button @click="getStaff()" class="p-3 bg-orange-900/20 hover:bg-orange-800/30 rounded-xl border border-orange-500/20 transition-all" :disabled="loading">
+                <svg :class="loading ? 'animate-spin' : ''" class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
             </button>
             
-            <button @click="openModal('add')" class="px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-black rounded-xl transition-all shadow-lg shadow-green-900/30 text-xs tracking-widest uppercase">
+            <button @click="openModal('add')" class="px-6 py-3 bg-orange-600 hover:bg-orange-500 text-white font-black rounded-xl transition-all shadow-lg shadow-orange-900/40 text-xs tracking-widest uppercase">
                 + Tambah Staff
             </button>
         </div>
     </div>
 
-    <div class="glass rounded-3xl shadow-2xl border border-white/10 overflow-hidden">
-        
+    <div class="glass rounded-3xl shadow-2xl overflow-hidden">
         <div class="hidden md:block">
             <table class="w-full text-left table-fixed border-collapse">
                 <thead>
-                    <tr class="bg-slate-800/80 text-slate-400 text-[10px] uppercase font-black tracking-[0.2em] border-b border-white/5">
-                        <th class="px-8 py-5 w-[30%]">Staff Identity</th>
-                        <th class="px-8 py-5 w-[35%]">Outlet</th>
+                    <tr class="bg-orange-950/40 text-orange-200/50 text-[10px] uppercase font-black tracking-[0.2em] border-b border-orange-500/10">
+                        <th class="px-8 py-5 w-[25%]">Identity</th>
+                        <th class="px-8 py-5 w-[20%]">Outlet</th>
+                        <th class="px-8 py-5 w-[15%] text-center">Shiff</th>
                         <th class="px-8 py-5 w-[20%] text-center">Status & Job</th>
-                        <th class="px-8 py-5 w-[15%] text-right">Action</th>
+                        <th class="px-8 py-5 w-[20%] text-right">Action</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-white/5">
+                <tbody class="divide-y divide-orange-500/5">
                     <template x-for="item in pagedStaffs" :key="item.id || item.Id">
-                        <tr class="hover:bg-white/[0.04] transition-all">
+                        <tr class="hover:bg-orange-500/[0.03] transition-all">
                             <td class="px-8 py-5">
                                 <div class="flex items-center gap-4">
-                                    <span class="text-green-500 font-mono text-[10px] w-6" x-text="item.id || item.Id"></span>
+                                    <span class="text-orange-500 font-mono text-[10px]" x-text="item.id || item.Id"></span>
                                     <div class="min-w-0">
-                                        <div class="font-bold text-slate-100 text-sm truncate" x-text="item.nama || item.Nama"></div>
-                                        <div class="text-[9px] text-slate-500 uppercase font-black" x-text="item.posisi || item.Posisi"></div>
+                                        <div class="font-bold text-orange-50 text-sm truncate" x-text="item.nama || item.Nama"></div>
+                                        <div class="text-[9px] text-orange-400/60 uppercase font-black" x-text="item.posisi || item.Posisi"></div>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-8 py-5">
-                                <div class="text-slate-300 text-xs truncate" x-text="item.outlet || item.Outlet"></div>
+                                <div class="text-orange-100/70 text-xs truncate" x-text="item.outlet || item.Outlet"></div>
+                            </td>
+                            <td class="px-8 py-5 text-center">
+                                <span class="px-2 py-1 rounded-md bg-orange-500/10 text-orange-400 border border-orange-500/20 text-[10px] font-bold uppercase" x-text="item.shiff || item.Shiff || '-'"></span>
                             </td>
                             <td class="px-8 py-5 text-center">
                                 <div class="flex flex-col items-center gap-1">
                                     <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase border" 
-                                          :class="(item.status || item.Status) === 'Aktif' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-slate-700/50 text-slate-500 border-white/5'"
+                                          :class="(item.status || item.Status) === 'Aktif' ? 'bg-amber-500 text-black border-amber-500' : 'bg-transparent text-orange-300/30 border-orange-500/10'"
                                           x-text="item.status || item.Status"></span>
-                                    <span class="text-[9px] text-blue-400 font-mono font-bold" x-text="item.job || item.Job"></span>
+                                    <span class="text-[9px] text-orange-400 font-mono font-bold" x-text="item.job || item.Job"></span>
                                 </div>
                             </td>
-                            <td class="px-8 py-5 text-right relative" x-data="{ menuOpen: false }">
-                                <button @click="menuOpen = !menuOpen" @click.away="menuOpen = false" class="p-2 hover:bg-slate-700/50 rounded-lg transition-colors">
-                                    <svg class="w-5 h-5 text-slate-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>
-                                </button>
-                                <div x-show="menuOpen" x-cloak class="absolute right-12 top-12 w-28 glass border border-white/20 rounded-xl shadow-2xl z-50 overflow-hidden shadow-black">
-                                    <button @click="openModal('edit', item); menuOpen = false" class="w-full text-left px-4 py-2.5 text-[10px] font-black text-blue-400 hover:bg-blue-500/10 border-b border-white/5 uppercase">Edit</button>
-                                    <button @click="deleteStaff(item.id || item.Id); menuOpen = false" class="w-full text-left px-4 py-2.5 text-[10px] font-black text-red-400 hover:bg-red-500/10 uppercase">Hapus</button>
+                            <td class="px-8 py-5 text-right" x-data="{ menuOpen: false }">
+                                <div class="flex justify-end gap-2">
+                                    <button @click="openModal('edit', item)" class="p-2 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 rounded-lg transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                    </button>
+                                    <button @click="deleteStaff(item.id || item.Id)" class="p-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -104,118 +110,99 @@
             </table>
         </div>
 
-        <div class="block md:hidden divide-y divide-white/5">
+        <div class="block md:hidden divide-y divide-orange-500/5">
             <template x-for="item in pagedStaffs" :key="item.id || item.Id">
                 <div class="p-5">
-                    <div class="flex justify-between items-start mb-3">
-                        <div class="flex gap-3 min-w-0">
-                            <div class="w-9 h-9 rounded-lg bg-slate-800 border border-white/10 flex items-center justify-center shrink-0">
-                                <span class="text-[10px] font-mono text-green-500 font-bold" x-text="item.id || item.Id"></span>
-                            </div>
-                            <div class="min-w-0">
-                                <h4 class="font-bold text-slate-100 text-sm truncate" x-text="item.nama || item.Nama"></h4>
-                                <p class="text-[9px] text-slate-500 uppercase font-black" x-text="item.posisi || item.Posisi"></p>
+                    <div class="flex justify-between mb-3">
+                        <div class="flex gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-orange-950 border border-orange-500/20 flex items-center justify-center font-mono text-orange-500 text-xs" x-text="item.id || item.Id"></div>
+                            <div>
+                                <h4 class="font-bold text-orange-50 text-sm" x-text="item.nama || item.Nama"></h4>
+                                <p class="text-[9px] text-orange-400/60 uppercase font-black" x-text="item.posisi || item.Posisi"></p>
                             </div>
                         </div>
-                        <div x-data="{ mOpen: false }" class="relative">
-                            <button @click="mOpen = !mOpen" @click.away="mOpen = false" class="p-2">
-                                <svg class="w-4 h-4 text-slate-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>
-                            </button>
-                            <div x-show="mOpen" x-cloak class="absolute right-0 top-8 w-28 glass border border-white/20 rounded-xl shadow-2xl z-50 overflow-hidden shadow-black">
-                                <button @click="openModal('edit', item); mOpen = false" class="w-full text-left px-4 py-3 text-[10px] font-bold text-blue-400 hover:bg-blue-400/10 border-b border-white/5 uppercase">Edit</button>
-                                <button @click="deleteStaff(item.id || item.Id); mOpen = false" class="w-full text-left px-4 py-3 text-[10px] font-bold text-red-400 hover:bg-red-400/10 uppercase">Hapus</button>
-                            </div>
-                        </div>
+                        <span class="text-[10px] font-bold text-orange-400" x-text="item.shiff || '-'"></span>
                     </div>
-                    <div class="bg-slate-900/40 rounded-xl p-3 border border-white/5 flex justify-between items-center text-[10px]">
-                        <span class="text-slate-500 truncate mr-4 max-w-[60%]" x-text="item.outlet || item.Outlet"></span>
-                        <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase border shrink-0" 
-                              :class="(item.status || item.Status) === 'Aktif' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-slate-700/50 text-slate-500 border-white/5'"
-                              x-text="item.status || item.Status"></span>
+                    <div class="flex gap-2">
+                         <button @click="openModal('edit', item)" class="flex-1 py-2 bg-orange-500/10 text-orange-400 rounded-lg text-[10px] font-bold uppercase">Edit</button>
+                         <button @click="deleteStaff(item.id || item.Id)" class="flex-1 py-2 bg-red-500/10 text-red-400 rounded-lg text-[10px] font-bold uppercase">Hapus</button>
                     </div>
                 </div>
             </template>
         </div>
 
-        <div class="px-6 py-4 border-t border-white/5 bg-slate-900/40 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="text-[10px] font-mono text-slate-500 uppercase tracking-widest font-black">
-                Showing <span class="text-green-500" x-text="startRange"></span> - <span class="text-green-500" x-text="endRange"></span> 
+        <div class="px-6 py-4 border-t border-orange-500/10 bg-orange-950/20 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="text-[10px] font-mono text-orange-300/40 uppercase tracking-widest font-black">
+                Showing <span class="text-orange-500" x-text="startRange"></span> - <span class="text-orange-500" x-text="endRange"></span> 
                 of <span class="text-white" x-text="staffs.length"></span>
             </div>
-
-            <div class="flex items-center gap-1">
-                <button @click="currentPage = 1" :disabled="currentPage === 1" class="p-2 hover:text-white text-slate-600 disabled:opacity-0 transition-all">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"></path><path d="M16.707 5.293a1 1 0 010 1.414L13.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"></path></svg>
+            <div class="flex items-center gap-2">
+                <button @click="currentPage--" :disabled="currentPage === 1" class="w-8 h-8 flex items-center justify-center bg-orange-900/30 rounded-lg border border-orange-500/20 disabled:opacity-20 text-orange-500">
+                    &lt;
                 </button>
-                
-                <button @click="currentPage--" :disabled="currentPage === 1" class="w-9 h-9 flex items-center justify-center bg-slate-800 rounded-lg border border-slate-700 disabled:opacity-20 hover:bg-slate-700 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                </button>
-
-                <div class="flex items-center px-4 font-mono text-xs">
-                    <span class="text-white font-bold" x-text="currentPage"></span>
-                    <span class="text-slate-600 mx-2">/</span>
-                    <span class="text-slate-400" x-text="totalPages"></span>
-                </div>
-
-                <button @click="currentPage++" :disabled="currentPage === totalPages" class="w-9 h-9 flex items-center justify-center bg-slate-800 rounded-lg border border-slate-700 disabled:opacity-20 hover:bg-slate-700 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                </button>
-
-                <button @click="currentPage = totalPages" :disabled="currentPage === totalPages" class="p-2 hover:text-white text-slate-600 disabled:opacity-0 transition-all">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"></path><path d="M3.293 14.707a1 1 0 010-1.414L6.586 10 3.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"></path></svg>
+                <span class="text-xs font-mono text-orange-200" x-text="currentPage + ' / ' + totalPages"></span>
+                <button @click="currentPage++" :disabled="currentPage === totalPages" class="w-8 h-8 flex items-center justify-center bg-orange-900/30 rounded-lg border border-orange-500/20 disabled:opacity-20 text-orange-500">
+                    &gt;
                 </button>
             </div>
         </div>
     </div>
     
-    <div x-show="showModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md" x-transition x-cloak>
-        <div class="glass w-full max-w-md rounded-3xl shadow-2xl overflow-hidden shadow-black">
-            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-slate-900/50">
-                <h3 class="text-sm font-black neon-text uppercase tracking-widest" x-text="mode === 'edit' ? 'Edit Staff Node' : 'Register New Node'"></h3>
-                <button @click="showModal = false" class="w-8 h-8 flex items-center justify-center bg-slate-800 rounded-full text-slate-400">&times;</button>
+    <div x-show="showModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" x-transition x-cloak>
+        <div class="glass w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border-orange-500/30">
+            <div class="p-6 border-b border-orange-500/10 flex justify-between items-center bg-orange-950/40">
+                <h3 class="text-sm font-black neon-text uppercase tracking-widest" x-text="mode === 'edit' ? 'Update Node' : 'Initialize Node'"></h3>
+                <button @click="showModal = false" class="text-orange-500 hover:text-white text-2xl">&times;</button>
             </div>
             <form @submit.prevent="saveStaff" class="p-6 space-y-4">
                 <div>
-                    <label class="block text-[9px] uppercase font-black text-slate-500 mb-1">Full Name</label>
+                    <label class="block text-[9px] uppercase font-black text-orange-400/50 mb-1">Full Name</label>
                     <input type="text" x-model="form.nama" required class="w-full input-dark rounded-xl px-4 py-2.5 text-sm font-bold">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-[9px] uppercase font-black text-slate-500 mb-1">Position</label>
-                        <select x-model="form.posisi" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold uppercase">
+                        <label class="block text-[9px] uppercase font-black text-orange-400/50 mb-1">Position</label>
+                        <select x-model="form.posisi" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold">
                             <option value="Teknisi">Teknisi</option>
                             <option value="Admin">Admin</option>
-                            <option value="Frontliner">Cs</option>
+                            <option value="Frontliner">CS</option>
                             <option value="Kepala Cabang">KACAB</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[9px] uppercase font-black text-slate-500 mb-1">Status</label>
-                        <select x-model="form.status" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold uppercase">
+                        <label class="block text-[9px] uppercase font-black text-orange-400/50 mb-1">Shiff</label>
+                        <select x-model="form.shiff" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold">
+                            <option value="Pagi">Pagi</option>
+                            <option value="Siang">Siang</option>
+                            <option value="Malam">Malam</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[9px] uppercase font-black text-orange-400/50 mb-1">Status</label>
+                        <select x-model="form.status" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold">
                             <option value="Aktif">Aktif</option>
                             <option value="non aktif">Non Aktif</option>
                         </select>
                     </div>
+                    <div>
+                        <label class="block text-[9px] uppercase font-black text-orange-400/50 mb-1">Specialization</label>
+                        <select x-model="form.job" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold">
+                            <option value="Mesin">Mesin</option>
+                            <option value="Interface">Interface</option>
+                            <option value="Software">Software</option>
+                            <option value="General">General</option>
+                        </select>
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-[9px] uppercase font-black text-slate-500 mb-1">Outlet Context</label>
+                    <label class="block text-[9px] uppercase font-black text-orange-400/50 mb-1">Outlet</label>
                     <input type="text" x-model="form.outlet" required class="w-full input-dark rounded-xl px-4 py-2.5 text-sm font-bold">
                 </div>
-                <div>
-                    <label class="block text-[9px] uppercase font-black text-slate-500 mb-1">Specialization</label>
-                    <select x-model="form.job" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold uppercase">
-                        <option value="Mesin">Mesin</option>
-                        <option value="Interface">Interface</option>
-                        <option value="Software">Software</option>
-                        <option value="Aksesoris">Aksesori</option>
-                        <option value="General">General</option>
-                    </select>
-                </div>
                 <div class="flex justify-end gap-3 pt-4">
-                    <button type="button" @click="showModal = false" class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Cancel</button>
-                    <button type="submit" class="bg-green-600 hover:bg-green-500 px-8 py-2.5 rounded-xl text-[10px] font-black text-white uppercase tracking-widest shadow-lg shadow-green-900/40" :disabled="loading">
-                        <span x-text="loading ? 'Processing...' : 'Save Record'"></span>
+                    <button type="submit" class="w-full bg-orange-600 hover:bg-orange-500 py-3 rounded-xl text-xs font-black text-white uppercase tracking-widest shadow-lg shadow-orange-900/40">
+                        <span x-text="loading ? 'SYNCING...' : 'SAVE CHANGES'"></span>
                     </button>
                 </div>
             </form>
@@ -228,22 +215,15 @@
         return {
             url: 'https://job.hitungnota.com/api',
             loading: false, showModal: false, mode: 'add', staffs: [], currentPage: 1, rowsPerPage: 10,
-            form: { Id: '', nama: '', outlet: 'S01 TIMORITEL MADIUN', posisi: 'Teknisi', status: 'Aktif', job: 'Mesin' },
+            form: { Id: '', nama: '', outlet: 'S01 TIMORITEL MADIUN', posisi: 'Teknisi', status: 'Aktif', job: 'Mesin', shiff: 'Pagi' },
 
-            // Logic Paging
             get pagedStaffs() {
                 const start = (this.currentPage - 1) * this.rowsPerPage;
                 return this.staffs.slice(start, start + parseInt(this.rowsPerPage));
             },
-            get totalPages() { 
-                return Math.ceil(this.staffs.length / this.rowsPerPage) || 1; 
-            },
-            get startRange() {
-                return this.staffs.length === 0 ? 0 : (this.currentPage - 1) * this.rowsPerPage + 1;
-            },
-            get endRange() {
-                return Math.min(this.currentPage * this.rowsPerPage, this.staffs.length);
-            },
+            get totalPages() { return Math.ceil(this.staffs.length / this.rowsPerPage) || 1; },
+            get startRange() { return this.staffs.length === 0 ? 0 : (this.currentPage - 1) * this.rowsPerPage + 1; },
+            get endRange() { return Math.min(this.currentPage * this.rowsPerPage, this.staffs.length); },
 
             async call(payload) {
                 this.loading = true;
@@ -254,16 +234,13 @@
                         body: JSON.stringify(payload)
                     });
                     return await response.json();
-                } catch (err) {
-                    alert('Network Error: ' + err.message); return null;
-                } finally { this.loading = false; }
+                } catch (err) { alert('Err: ' + err.message); return null; } finally { this.loading = false; }
             },
 
             async getStaff() {
                 const res = await this.call({ method: 'fetch', table: 'staff', params: [24] });
                 if (res && res.data) {
                     this.staffs = Array.isArray(res.data) ? res.data : [res.data];
-                    this.currentPage = 1; // Reset ke hal 1 setiap refresh data
                 }
             },
 
@@ -273,51 +250,30 @@
                     this.form = {
                         Id: item.id || item.Id, nama: item.nama || item.Nama,
                         outlet: item.outlet || item.Outlet, posisi: item.posisi || item.Posisi,
-                        status: item.status || item.Status, job: item.job || item.Job
+                        status: item.status || item.Status, job: item.job || item.Job,
+                        shiff: item.shiff || item.Shiff || 'Pagi'
                     };
                 } else {
-                    this.form = { Id: '', nama: '', outlet: 'S01 TIMORITEL MADIUN', posisi: 'Teknisi', status: 'Aktif', job: 'Mesin' };
+                    this.form = { Id: '', nama: '', outlet: 'S01 TIMORITEL MADIUN', posisi: 'Teknisi', status: 'Aktif', job: 'Mesin', shiff: 'Pagi' };
                 }
             },
 
             async saveStaff() {
-    const payload = { ...this.form, id: this.form.Id || 0, shiff: "Siang" };
-
-    const res = await this.call({
-        method: 'path', 
-        table: 'staff',
-        params: [payload]
-    });
-
-    if (res) {
-        if (this.form.Id) {
-            // Update data yang sudah ada
-            this.staffs = res.data
-            const index = this.staffs.findIndex(s => s.Id == this.form.Id);
-            if (index !== -1) {
-                // Menggunakan splice agar Alpine.js mendeteksi perubahan
-                this.staffs.splice(index, 1, { ...payload });
-            }
-        } else {
-            // Tambah data baru ke baris paling atas
-            // Pastikan 'res' berisi ID baru dari server jika ada
-            const newEntry = { ...payload, Id: res.id || Date.now() };
-            this.staffs = [newEntry, ...this.staffs];
-        }
-
-        this.showModal = false;
-        this.form = {}; // Reset form
-       }
-    },
+                const payload = { ...this.form, id: this.form.Id || 0 };
+                const res = await this.call({ method: 'path', table: 'staff', params: [payload] });
+                if (res) {
+                    await this.getStaff();
+                    this.showModal = false;
+                }
+            },
 
             async deleteStaff(id) {
-                if (!confirm('Hapus data ini dari sistem?')) return;
+                if (!confirm('Hapus data?')) return;
                 const res = await this.call({ method: 'delete', table: 'staff', params: [id] });
                 if (res) await this.getStaff();
             }
         }
     }
 </script>
-
 </body>
 </html>
