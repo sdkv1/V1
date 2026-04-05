@@ -27,7 +27,7 @@
 </head>
 <body class="p-2 md:p-4 min-h-screen bg-grid">
 
-<div class="max-w-[1100px] mx-auto w-full" x-data="nodeChain()" x-init="init()">
+<div class="max-w-[900px] mx-auto w-full" x-data="nodeChain()" x-init="init()">
     
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-slate-900/40 p-5 rounded-2xl border border-white/5 shadow-2xl glass">
         <div class="text-center md:text-left">
@@ -40,12 +40,12 @@
 
         <div class="bg-slate-950/80 px-8 py-3 rounded-2xl border border-blue-500/20 shadow-inner group">
             <p class="text-[7px] text-blue-500 font-black uppercase tracking-[0.4em] text-center mb-1 group-hover:neon-text transition-all">Central System Time</p>
-            <h2 class="text-3xl md:text-4xl font-mono font-black tracking-widest text-white" x-text="liveTime">00:00:00</h2>
+            <h2 class="text-3xl font-mono font-black tracking-widest text-white" x-text="liveTime">00:00:00</h2>
         </div>
         
         <div class="hidden lg:block text-right">
             <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Network_Status</p>
-            <p class="text-[10px] font-mono text-emerald-400 font-bold uppercase">Synced_Successfully</p>
+            <p class="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-tighter">Synced_Live</p>
         </div>
     </div>
 
@@ -57,30 +57,36 @@
                 <thead>
                     <tr class="bg-slate-900/80 text-slate-500 text-[8px] uppercase font-black tracking-widest border-b border-white/5">
                         <th class="px-5 py-3 w-20 text-center">Antrian</th>
-                        <th class="px-5 py-3">Transaction_ID</th>
-                        <th class="px-5 py-3">Timestamp</th>
+                        <th class="px-5 py-3">Data_Packet (Invoice & Timestamp)</th>
                         <th class="px-5 py-3 text-right">Node_Origin</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
                     <template x-for="trans in transactions" :key="trans.id">
                         <tr class="hover:bg-blue-600/[0.07] transition-all group border-l-2 border-l-transparent hover:border-l-blue-500">
-                            <td class="px-5 py-2.5">
+                            <td class="px-5 py-3">
                                 <div class="flex items-center justify-center gap-2">
                                     <div class="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]"></div>
                                     <span class="text-[11px] font-mono font-black text-blue-400" x-text="trans.nomor_antrian"></span>
                                 </div>
                             </td>
-                            <td class="px-5 py-2.5">
-                                <div class="flex flex-col">
-                                    <span class="font-bold text-slate-200 text-[11px] font-mono tracking-tight group-hover:text-white" x-text="trans.invoice_service"></span>
-                                    <span class="text-[7px] text-slate-600 font-mono uppercase" x-text="'Hash:' + trans.id"></span>
+                            
+                            <td class="px-5 py-3">
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="font-bold text-slate-200 text-[12px] font-mono tracking-tight group-hover:text-white" x-text="trans.invoice_service"></span>
+                                    
+                                    <div class="flex items-center gap-2 text-slate-500 font-mono text-[9px]">
+                                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        <span x-text="trans.tanggal_antrian"></span>
+                                    </div>
+                                    
+                                    <span class="text-[7px] text-slate-700 font-mono uppercase mt-0.5" x-text="'Hash:' + trans.id"></span>
                                 </div>
                             </td>
-                            <td class="px-5 py-2.5 text-slate-400 text-[10px] font-mono" x-text="trans.tanggal_antrian"></td>
-                            <td class="px-5 py-2.5 text-right">
-                                <div class="inline-block bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/20">
-                                    <span class="text-[8px] text-blue-300 font-black uppercase" x-text="'ID:' + trans.id_cabang_erzap"></span>
+
+                            <td class="px-5 py-3 text-right">
+                                <div class="inline-block bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20">
+                                    <span class="text-[9px] text-blue-300 font-black uppercase tracking-tighter" x-text="'NODE_' + trans.id_cabang_erzap"></span>
                                 </div>
                             </td>
                         </tr>
@@ -90,11 +96,11 @@
         </div>
     </div>
 
-    <div class="mt-4 flex justify-between items-center px-2 opacity-40">
-        <p class="text-[8px] text-slate-500 font-black uppercase tracking-[0.5em]">NodeChain_v1.0.8</p>
-        <div class="flex gap-4">
-            <span class="text-[8px] text-slate-500 font-mono">LATENCY: 12ms</span>
-            <span class="text-[8px] text-slate-500 font-mono">POOL: 24</span>
+    <div class="mt-4 flex justify-between items-center px-2 opacity-30">
+        <p class="text-[8px] text-slate-500 font-black uppercase tracking-[0.5em]">NodeChain_Core_v1.0.9</p>
+        <div class="flex gap-4 font-mono text-[8px]">
+            <span>REQ_METHOD: POST</span>
+            <span>POOL: 24</span>
         </div>
     </div>
 </div>
@@ -109,52 +115,36 @@
             pulseWidth: 0,
 
             init() {
-                // Jalankan jam (Update per detik)
                 this.updateClock();
                 setInterval(() => this.updateClock(), 1000);
 
-                // Auto Refresh Data (Update per detik)
                 this.getTrans();
                 setInterval(() => {
                     this.getTrans();
                     this.pulseWidth = 0;
-                    setTimeout(() => this.pulseWidth = 100, 50); // Animasi loading bar atas
+                    setTimeout(() => this.pulseWidth = 100, 50);
                 }, 1000);
             },
 
             updateClock() {
                 const now = new Date();
                 this.liveTime = now.toLocaleTimeString('en-GB', { 
-                    hour12: false, 
-                    hour: '2-digit', 
-                    minute: '2-digit', 
-                    second: '2-digit' 
+                    hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' 
                 });
             },
 
             async getTrans() {
-                // Loading true hanya saat pertama kali agar tidak flicker
-                if (this.transactions.length === 0) this.loading = true;
-                
                 try {
                     const response = await fetch(this.url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            method: 'fetch', 
-                            table: 'trans', 
-                            params: [24] 
-                        })
+                        body: JSON.stringify({ method: 'fetch', table: 'trans', params: [24] })
                     });
                     const res = await response.json();
                     if (res && res.data) {
                         this.transactions = Array.isArray(res.data) ? res.data : [res.data];
                     }
-                } catch (err) { 
-                    console.error('Chain Interrupted:', err); 
-                } finally { 
-                    this.loading = false; 
-                }
+                } catch (err) { console.error('Sync Interrupted'); }
             }
         }
     }
