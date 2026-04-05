@@ -32,7 +32,7 @@
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-slate-900/40 p-5 rounded-2xl border border-white/5 shadow-2xl glass">
         <div class="text-center md:text-left">
             <h1 class="text-xl font-black tracking-[0.2em] uppercase italic neon-text">NODE <span class="text-white">CHAIN</span></h1>
-            <p class="text-[8px] text-slate-500 font-mono uppercase tracking-[0.3em] mt-1">Status: Syncing_1Hz</p>
+            <p class="text-[9px] text-blue-400 font-mono uppercase tracking-[0.2em] mt-1" x-text="'Pasaran: ' + pasaran"></p>
         </div>
 
         <div class="bg-slate-950/80 px-8 py-3 rounded-2xl border border-blue-500/20 shadow-inner">
@@ -41,8 +41,8 @@
         </div>
         
         <div class="hidden lg:block text-right">
-            <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Network_Pool</p>
-            <p class="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-tighter">Node_24_Live</p>
+            <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Sort_Mode</p>
+            <p class="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-tighter italic">Latest_On_Top</p>
         </div>
     </div>
 
@@ -95,7 +95,7 @@
     </div>
 
     <div class="mt-4 flex justify-between items-center px-2 opacity-30 font-mono text-[8px]">
-        <p class="uppercase tracking-[0.5em]">NodeChain_v1.1.8_Stable</p>
+        <p class="uppercase tracking-[0.5em]">NodeChain_v1.2.0_Pahing_Release</p>
         <div class="flex gap-4">
             <span>SYNC_RATE: 1HZ</span>
             <span>POOL: 24</span>
@@ -109,10 +109,14 @@
             url: 'https://job.hitungnota.com/api',
             transactions: [],
             liveTime: '00:00:00',
+            pasaran: '',
             pulseWidth: 0,
+
             init() {
                 this.updateClock();
+                this.calculatePasaran();
                 setInterval(() => this.updateClock(), 1000);
+                
                 this.getTrans();
                 setInterval(() => {
                     this.getTrans();
@@ -120,9 +124,21 @@
                     setTimeout(() => this.pulseWidth = 100, 50);
                 }, 1000);
             },
+
             updateClock() {
                 this.liveTime = new Date().toLocaleTimeString('en-GB', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
             },
+
+            calculatePasaran() {
+                const pasar = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
+                // Baseline: 1 Januari 1970 adalah Kamis Wage
+                // Index Wage di array pasar adalah 3.
+                const startMillis = new Date("1970-01-01").getTime();
+                const nowMillis = new Date().getTime();
+                const diffDays = Math.floor((nowMillis - startMillis) / (1000 * 60 * 60 * 24));
+                this.pasaran = pasar[(diffDays + 3) % 5];
+            },
+
             async getTrans() {
                 try {
                     const response = await fetch(this.url, {
@@ -132,7 +148,10 @@
                     });
                     const res = await response.json();
                     if (res && res.data) {
-                        this.transactions = Array.isArray(res.data) ? res.data : [res.data];
+                        let rawData = Array.isArray(res.data) ? res.data : [res.data];
+                        
+                        // SORTING: Data terbaru (ID terbesar) berada di atas
+                        this.transactions = rawData.sort((a, b) => b.id - a.id);
                     }
                 } catch (err) { console.error('Sync error'); }
             }
