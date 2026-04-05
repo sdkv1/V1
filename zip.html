@@ -32,7 +32,13 @@
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-slate-900/40 p-5 rounded-2xl border border-white/5 shadow-2xl glass">
         <div class="text-center md:text-left">
             <h1 class="text-xl font-black tracking-[0.2em] uppercase italic neon-text">NODE <span class="text-white">CHAIN</span></h1>
-            <p class="text-[9px] text-blue-400 font-mono uppercase tracking-[0.2em] mt-1" x-text="'Pasaran: ' + pasaran"></p>
+            <div class="flex items-center gap-2 mt-1 justify-center md:justify-start">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <p class="text-[9px] text-emerald-400 font-mono uppercase tracking-[0.2em]">System_Online // Live_Sync</p>
+            </div>
         </div>
 
         <div class="bg-slate-950/80 px-8 py-3 rounded-2xl border border-blue-500/20 shadow-inner">
@@ -42,7 +48,7 @@
         
         <div class="hidden lg:block text-right">
             <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Page_Status</p>
-            <p class="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-tighter" x-text="`Page ${page} of ${totalPages}`"></p>
+            <p class="text-[10px] font-mono text-blue-400 font-bold uppercase tracking-tighter" x-text="`Page ${page} / ${totalPages}`"></p>
         </div>
     </div>
 
@@ -87,12 +93,20 @@
             </table>
         </div>
 
-        <div class="p-4 bg-slate-900/20 border-t border-white/5 flex justify-between items-center">
-            <span class="text-[10px] font-mono text-slate-500" x-text="`TOTAL: ${transactions.length} ITEMS` "></span>
+        <div class="p-4 bg-slate-900/40 border-t border-white/5 flex justify-between items-center">
+            <span class="text-[9px] font-mono text-slate-500 uppercase tracking-widest" x-text="`Total_Pool: ${transactions.length}`"></span>
             <div class="flex gap-2">
-                <button @click="prevPage()" :disabled="page === 1" class="px-3 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-20 rounded border border-white/10 text-[10px] font-bold uppercase transition-all">Prev</button>
-                <button @click="nextPage()" :disabled="page >= totalPages" class="px-3 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-20 rounded border border-white/10 text-[10px] font-bold uppercase transition-all">Next</button>
+                <button @click="prevPage()" :disabled="page === 1" class="px-4 py-1.5 bg-white/5 hover:bg-blue-600/20 disabled:opacity-10 rounded-lg border border-white/10 text-[9px] font-black uppercase tracking-widest transition-all">Prev</button>
+                <button @click="nextPage()" :disabled="page >= totalPages" class="px-4 py-1.5 bg-white/5 hover:bg-blue-600/20 disabled:opacity-10 rounded-lg border border-white/10 text-[9px] font-black uppercase tracking-widest transition-all">Next</button>
             </div>
+        </div>
+    </div>
+
+    <div class="mt-4 flex justify-between items-center px-2 opacity-30 font-mono text-[8px]">
+        <p class="uppercase tracking-[0.5em]">NodeChain_v1.2.5_Stable</p>
+        <div class="flex gap-4">
+            <span>SYNC: 1HZ</span>
+            <span x-text="`LIMIT: ${perPage}_PER_PAGE` "></span>
         </div>
     </div>
 </div>
@@ -103,17 +117,15 @@
             url: 'https://job.hitungnota.com/api',
             transactions: [],
             liveTime: '00:00:00',
-            pasaran: '',
             pulseWidth: 0,
             
-            // Paging State
+            // Paging Settings
             page: 1,
-            perPage: 10,
+            perPage: 10, // <--- Ubah jumlah data per halaman di sini
             totalPages: 1,
 
             init() {
                 this.updateClock();
-                this.calculatePasaran();
                 setInterval(() => this.updateClock(), 1000);
                 
                 this.getTrans();
@@ -124,11 +136,9 @@
                 }, 1000);
             },
 
-            // Fungsi ambil data halaman tertentu
             pagedTransactions() {
                 const start = (this.page - 1) * this.perPage;
-                const end = start + this.perPage;
-                return this.transactions.slice(start, end);
+                return this.transactions.slice(start, start + this.perPage);
             },
 
             nextPage() { if(this.page < this.totalPages) this.page++; },
@@ -136,12 +146,6 @@
 
             updateClock() {
                 this.liveTime = new Date().toLocaleTimeString('en-GB', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            },
-
-            calculatePasaran() {
-                const pasar = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
-                const diffDays = Math.floor((new Date().getTime() - new Date("1970-01-01").getTime()) / (1000 * 60 * 60 * 24));
-                this.pasaran = pasar[(diffDays + 3) % 5];
             },
 
             async getTrans() {
@@ -155,11 +159,11 @@
                     if (res && res.data) {
                         let rawData = Array.isArray(res.data) ? res.data : [res.data];
                         
-                        // Urutkan terbaru di atas
+                        // Sorting: Terbaru (ID terbesar) di atas
                         this.transactions = rawData.sort((a, b) => b.id - a.id);
                         
-                        // Update total pages
-                        this.totalPages = Math.ceil(this.transactions.length / this.perPage);
+                        // Update total paging
+                        this.totalPages = Math.max(1, Math.ceil(this.transactions.length / this.perPage));
                     }
                 } catch (err) { console.error('Sync error'); }
             }
