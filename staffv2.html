@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NODE CHAIN - Staff Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        body { 
+            background-color: #020617; 
+            color: #f8fafc; 
+            font-family: 'Inter', sans-serif;
+            background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 80%);
+            overflow-x: hidden;
+        }
+        .glass { 
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .neon-text { color: #3b82f6; text-shadow: 0 0 15px rgba(59, 130, 246, 0.6); }
+        .bg-grid { background-size: 20px 20px; background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px); }
+        input, select { background: rgba(0,0,0,0.3) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; }
+        input:focus { border-color: #3b82f6 !important; outline: none; }
+    </style>
+</head>
+<body class="p-2 md:p-4 min-h-screen bg-grid" x-data="staffManager()">
+
+<div class="max-w-[1000px] mx-auto w-full">
+    
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-slate-900/40 p-5 rounded-2xl border border-white/5 shadow-2xl glass">
+        <div>
+            <h1 class="text-xl font-black tracking-[0.2em] uppercase italic neon-text">STAFF <span class="text-white">COMMAND</span></h1>
+            <div class="flex items-center gap-2 mt-1">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                </span>
+                <p class="text-[9px] text-blue-400 font-mono uppercase tracking-[0.2em]">Personnel_Database // Admin_Mode</p>
+            </div>
+        </div>
+
+        <button @click="openModal('add')" class="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)]">
+            + Enroll New Staff
+        </button>
+    </div>
+
+    <div class="glass rounded-2xl shadow-2xl border border-white/10 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-900/80 text-slate-500 text-[8px] uppercase font-black tracking-widest border-b border-white/5">
+                        <th class="px-6 py-4">Identity</th>
+                        <th class="px-6 py-4">Role & Node</th>
+                        <th class="px-6 py-4">Status</th>
+                        <th class="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    <template x-for="person in staffList" :key="person.id">
+                        <tr class="hover:bg-blue-600/[0.05] transition-all group">
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-slate-100 text-[13px]" x-text="person.nama"></span>
+                                    <span class="text-[9px] text-slate-500 font-mono" x-text="'UID: ' + person.id"></span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col">
+                                    <span class="text-[11px] text-blue-400 font-bold uppercase tracking-tighter" x-text="person.jabatan"></span>
+                                    <span class="text-[9px] text-slate-500 font-mono" x-text="'BRANCH_' + person.cabang"></span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span :class="person.status === 'online' ? 'text-emerald-400 bg-emerald-400/10' : 'text-slate-500 bg-slate-500/10'" 
+                                      class="text-[8px] font-black uppercase px-2 py-0.5 rounded border border-current" 
+                                      x-text="person.status"></span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex justify-end gap-2">
+                                    <button @click="openModal('edit', person)" class="p-2 hover:bg-blue-500/20 rounded-lg text-blue-400 transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                    </button>
+                                    <button @click="deleteStaff(person.id)" class="p-2 hover:bg-red-500/20 rounded-lg text-red-400 transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div x-show="modalOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
+        <div @click.away="modalOpen = false" class="glass w-full max-w-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden" x-transition>
+            <div class="p-6 border-b border-white/5 bg-slate-900/50">
+                <h3 class="text-sm font-black uppercase tracking-widest text-blue-400" x-text="editMode ? 'Modify Identity' : 'New Enrollment'"></h3>
+            </div>
+            
+            <form @submit.prevent="saveStaff" class="p-6 space-y-4">
+                <div>
+                    <label class="text-[9px] uppercase font-black text-slate-500 tracking-widest mb-2 block">Full Name</label>
+                    <input type="text" x-model="formData.nama" class="w-full px-4 py-3 rounded-xl text-sm transition-all" placeholder="Enter staff name..." required>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[9px] uppercase font-black text-slate-500 tracking-widest mb-2 block">Position</label>
+                        <select x-model="formData.jabatan" class="w-full px-4 py-3 rounded-xl text-sm appearance-none">
+                            <option value="Technician">Technician</option>
+                            <option value="Admin">Admin</option>
+                            <option value="Lead">Lead</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] uppercase font-black text-slate-500 tracking-widest mb-2 block">Branch ID</label>
+                        <input type="number" x-model="formData.cabang" class="w-full px-4 py-3 rounded-xl text-sm" required>
+                    </div>
+                </div>
+
+                <div class="pt-4 flex gap-3">
+                    <button type="button" @click="modalOpen = false" class="flex-1 px-4 py-3 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all">Cancel</button>
+                    <button type="submit" class="flex-1 px-4 py-3 rounded-xl bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 shadow-lg shadow-blue-600/20 transition-all" x-text="editMode ? 'Commit Changes' : 'Mint Staff'"></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function staffManager() {
+        return {
+            modalOpen: false,
+            editMode: false,
+            staffList: [
+                { id: 101, nama: 'Budi Teknisi', jabatan: 'Technician', cabang: '24', status: 'online' },
+                { id: 102, nama: 'Sari Admin', jabatan: 'Admin', cabang: '12', status: 'offline' }
+            ],
+            formData: { id: null, nama: '', jabatan: 'Technician', cabang: '', status: 'online' },
+
+            openModal(mode, data = null) {
+                this.editMode = mode === 'edit';
+                if (this.editMode && data) {
+                    this.formData = { ...data };
+                } else {
+                    this.formData = { id: Date.now(), nama: '', jabatan: 'Technician', cabang: '', status: 'online' };
+                }
+                this.modalOpen = true;
+            },
+
+            saveStaff() {
+                if (this.editMode) {
+                    const index = this.staffList.findIndex(s => s.id === this.formData.id);
+                    if (index !== -1) this.staffList[index] = { ...this.formData };
+                } else {
+                    this.staffList.unshift({ ...this.formData });
+                }
+                this.modalOpen = false;
+                // Di sini kamu bisa panggil API fetch untuk sinkronisasi database
+                console.log('Data synced to chain');
+            },
+
+            deleteStaff(id) {
+                if (confirm('Execute removal for UID: ' + id + '?')) {
+                    this.staffList = this.staffList.filter(s => s.id !== id);
+                }
+            }
+        }
+    }
+</script>
+</body>
+</html>
+jb
