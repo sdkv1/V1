@@ -151,8 +151,27 @@
             prevPage() { if(this.page > 1) this.page--; },
 
             updateClock() {
-                this.liveTime = new Date().toLocaleTimeString('en-GB', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            },
+    const now = new Date();
+    
+    // Format Jam:Menit (HH:mm)
+    this.liveTime = now.toLocaleTimeString('en-GB', { 
+        hour12: false, 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    });
+
+    // Detik (:ss)
+    const sec = now.getSeconds().toString().padStart(2, '0');
+    this.liveSeconds = `:${sec}`;
+
+    // Tanggal (Contoh: 05 APR 2026)
+    this.liveDate = now.toLocaleDateString('id-ID', { 
+        day: '2-digit', 
+        month: 'short', 
+        year: 'numeric' 
+    }).toUpperCase();
+},
+
 
             async getTrans() {
                 try {
