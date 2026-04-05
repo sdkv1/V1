@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NODE CHAIN - Orange White Administrative Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        body { 
+            background-color: #ffffff; 
+            color: #1e293b; 
+            font-family: 'Inter', sans-serif;
+            background-image: radial-gradient(circle at 50% -20%, #fff7ed 0%, #ffffff 80%);
+            overflow-x: hidden;
+        }
+        .glass { 
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(249, 115, 22, 0.1);
+        }
+        .font-mono { font-family: 'Fira Code', monospace; }
+        .bg-grid { 
+            background-size: 30px 30px; 
+            background-image: linear-gradient(to right, rgba(249, 115, 22, 0.03) 1px, transparent 1px), 
+                              linear-gradient(to bottom, rgba(249, 115, 22, 0.03) 1px, transparent 1px); 
+        }
+        .neon-orange { color: #f97316; text-shadow: 0 0 10px rgba(249, 115, 22, 0.2); }
+    </style>
+</head>
+<body class="p-2 md:p-6 min-h-screen bg-grid" x-data="nodeChain()" x-init="init()">
+
+<div class="max-w-[1100px] mx-auto w-full">
+    
+    <div class="flex flex-col lg:flex-row justify-between items-center mb-8 gap-6 p-6 rounded-[2.5rem] shadow-xl glass border border-orange-100">
+        <div class="text-center lg:text-left">
+            <h1 class="text-2xl font-black tracking-[0.2em] uppercase italic neon-orange">NODE <span class="text-slate-800">CHAIN</span></h1>
+            <div class="flex items-center gap-2 mt-1 justify-center lg:justify-start">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                </span>
+                <p class="text-[9px] text-orange-600 font-mono uppercase tracking-[0.2em]">Operational_Live_Node // v1.2.5</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-5 bg-white px-5 py-3 rounded-[2.5rem] border border-orange-100 shadow-sm">
+            <div class="relative w-20 h-20 flex items-center justify-center bg-slate-50 rounded-full border-2 border-orange-200 shadow-inner">
+                <span class="absolute top-1 text-[10px] font-black text-slate-400">12</span>
+                <span class="absolute right-1.5 text-[10px] font-black text-slate-400">3</span>
+                <span class="absolute bottom-1 text-[10px] font-black text-slate-400">6</span>
+                <span class="absolute left-1.5 text-[10px] font-black text-slate-400">9</span>
+                <svg viewBox="0 0 100 100" class="w-full h-full -rotate-90">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(249, 115, 22, 0.05)" stroke-width="1" />
+                    <line x1="50" y1="50" x2="72" y2="50" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round" :style="`transform: rotate(${hourRotation}deg); transform-origin: 50px 50px; transition: transform 0.5s cubic-bezier(0.4, 2.3, 0.6, 1)`" />
+                    <line x1="50" y1="50" x2="88" y2="50" stroke="#475569" stroke-width="2" stroke-linecap="round" :style="`transform: rotate(${minuteRotation}deg); transform-origin: 50px 50px; transition: transform 0.5s cubic-bezier(0.4, 2.3, 0.6, 1)`" />
+                    <line x1="50" y1="50" x2="92" y2="50" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" :style="`transform: rotate(${secondRotation}deg); transform-origin: 50px 50px; transition: transform 0.2s ease-in-out`" />
+                    <circle cx="50" cy="50" r="3" fill="#f97316" stroke="white" stroke-width="1" />
+                </svg>
+            </div>
+            <div class="flex flex-col border-l-2 border-orange-50 pl-4">
+                <div class="flex items-baseline leading-none">
+                    <span class="text-2xl font-mono font-black text-slate-800 tracking-tighter" x-text="liveTime">00:00</span>
+                    <span class="text-xs font-mono font-bold text-orange-500 ml-1 w-6" x-text="liveSeconds">:00</span>
+                </div>
+                <div class="mt-2 flex items-center gap-1.5">
+                    <div class="w-1.5 h-1.5 rounded-full bg-orange-300"></div>
+                    <span class="text-[11px] font-mono font-black text-slate-400 uppercase tracking-tight" x-text="liveDate">05 APR 2026</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-[2rem] shadow-2xl border border-orange-50 overflow-hidden relative mb-10">
+        <div class="absolute top-0 left-0 h-[3px] bg-orange-500 transition-all duration-1000 ease-linear shadow-[0_0_10px_#f97316]" :style="'width: ' + pulseWidth + '%'"></div>
+        <div class="p-6 border-b border-orange-50 flex justify-between items-center bg-orange-50/20">
+            <h3 class="text-xs font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                <span class="w-2 h-4 bg-orange-500 rounded-sm"></span> Transaction Feed
+            </h3>
+            <span class="text-[9px] font-mono text-orange-600 font-bold bg-white px-3 py-1 rounded-full border border-orange-100 shadow-sm" x-text="`TOTAL_RECORDS: ${transactions.length}`"></span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 text-slate-400 text-[9px] uppercase font-black tracking-[0.15em] border-b border-orange-50">
+                        <th class="px-8 py-5">Reference</th>
+                        <th class="px-8 py-5">Transaction Details</th>
+                        <th class="px-8 py-5 text-right">Node Origin</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-orange-50">
+                    <template x-for="trans in pagedTransactions()" :key="trans.id">
+                        <tr class="hover:bg-orange-50/30 transition-all group border-l-4 border-l-transparent hover:border-l-orange-500">
+                            <td class="px-8 py-4">
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 rounded-full bg-orange-500"></div>
+                                        <span class="text-[12px] font-mono font-black text-orange-600 tracking-wider" x-text="trans.nomor_antrian"></span>
+                                    </div>
+                                    <span class="text-[9px] text-slate-400 font-mono ml-4" x-text="'SYS_ID: ' + trans.id"></span>
+                                </div>
+                            </td>
+                            <td class="px-8 py-4">
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="font-bold text-slate-800 text-[13px] font-mono group-hover:text-orange-700 transition-colors" x-text="trans.invoice_service"></span>
+                                    <span class="text-slate-400 font-mono text-[10px]" x-text="trans.tanggal_antrian"></span>
+                                </div>
+                            </td>
+                            <td class="px-8 py-4 text-right">
+                                <div class="inline-block bg-orange-100/50 px-3 py-1 rounded-lg border border-orange-200">
+                                    <span class="text-[10px] text-orange-700 font-black font-mono" x-text="'NODE_' + trans.id_cabang_erzap"></span>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+        <div class="p-6 bg-white border-t border-orange-50 flex justify-between items-center">
+            <p class="text-[9px] font-mono text-slate-400 uppercase tracking-widest" x-text="`Page ${page} of ${totalPages}`"></p>
+            <div class="flex gap-3">
+                <button @click="prevPage()" :disabled="page === 1" class="px-5 py-2 bg-slate-50 hover:bg-orange-500 hover:text-white disabled:opacity-30 rounded-xl border border-slate-200 text-[10px] font-black uppercase transition-all shadow-sm">Prev</button>
+                <button @click="nextPage()" :disabled="page >= totalPages" class="px-5 py-2 bg-slate-50 hover:bg-orange-500 hover:text-white disabled:opacity-30 rounded-xl border border-slate-200 text-[10px] font-black uppercase transition-all shadow-sm">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-10">
+        <div class="flex items-center justify-between mb-6 px-4">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-slate-800 rounded-2xl shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-md font-black text-slate-800 uppercase tracking-widest">Admin Control</h3>
+                    <p class="text-[10px] text-slate-400 font-mono">Permission & Account Oversight</p>
+                </div>
+            </div>
+            <button class="bg-orange-500 hover:bg-orange-600 text-white text-[10px] font-black uppercase tracking-[0.2em] px-6 py-3 rounded-2xl transition-all shadow-lg shadow-orange-100">+ Register Admin</button>
+        </div>
+
+        <div class="bg-white rounded-[2.5rem] shadow-xl border border-orange-50 overflow-hidden glass">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-orange-50/50 text-orange-900/40 text-[9px] uppercase font-black tracking-[0.2em] border-b border-orange-100">
+                            <th class="px-8 py-5">Administrator</th>
+                            <th class="px-8 py-5">Auth_Token</th>
+                            <th class="px-8 py-5">Outlet_Assignment</th>
+                            <th class="px-8 py-5 text-center">Role_Status</th>
+                            <th class="px-8 py-5 text-right">Control</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-orange-50">
+                        <tr class="hover:bg-orange-50/20 transition-all group">
+                            <td class="px-8 py-5">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-11 h-11 rounded-2xl bg-orange-500 flex items-center justify-center font-black text-white text-sm shadow-lg shadow-orange-100">JD</div>
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-black text-slate-800">John Doe</span>
+                                        <span class="text-[9px] text-slate-400 font-mono uppercase tracking-tighter">ID: ADMIN_9910</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-8 py-5 font-mono text-[11px] text-slate-600 italic">••••••••</td>
+                            <td class="px-8 py-5">
+                                <div class="flex flex-col">
+                                    <span class="text-[11px] font-black text-slate-700">Pusat Sudirman</span>
+                                    <span class="text-[9px] text-orange-500 font-mono font-bold uppercase tracking-widest">Main_01</span>
+                                </div>
+                            </td>
+                            <td class="px-8 py-5">
+                                <div class="flex flex-col items-center gap-2">
+                                    <span class="bg-slate-800 text-[8px] text-white font-black px-3 py-1 rounded-full uppercase tracking-widest">Super_User</span>
+                                    <div class="flex items-center gap-1">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                        <span class="text-[9px] font-black text-emerald-600 uppercase tracking-tighter">Active</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-8 py-5 text-right">
+                                <div class="flex justify-end gap-3 opacity-40 group-hover:opacity-100 transition-opacity">
+                                    <button class="p-2.5 bg-slate-50 hover:bg-orange-100 rounded-xl transition-colors text-orange-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                                    </button>
+                                    <button class="p-2.5 bg-slate-50 hover:bg-red-50 rounded-xl transition-colors text-red-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex justify-between items-center px-6 py-8 border-t border-orange-50 opacity-40 grayscale hover:grayscale-0 transition-all">
+        <p class="font-mono text-[9px] uppercase tracking-[0.5em]">NodeChain_v1.2.5_OrW_Premium</p>
+        <div class="flex gap-6 font-mono text-[9px]">
+            <span>ENCRYPTION: AES_256</span>
+            <span>Uptime: 99.9%</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    function nodeChain() {
+        return {
+            url: 'https://job.hitungnota.com/api',
+            transactions: [],
+            liveTime: '00:00',
+            liveSeconds: ':00',
+            liveDate: '',
+            hourRotation: 0,
+            minuteRotation: 0,
+            secondRotation: 0,
+            pulseWidth: 0,
+            page: 1,
+            perPage: 10,
+            totalPages: 1,
+
+            init() {
+                this.updateClock();
+                setInterval(() => this.updateClock(), 1000);
+                
+                this.getTrans();
+                setInterval(() => {
+                    this.getTrans();
+                    this.pulseWidth = 0;
+                    setTimeout(() => this.pulseWidth = 100, 50);
+                }, 1000);
+            },
+
+            pagedTransactions() {
+                const start = (this.page - 1) * this.perPage;
+                return this.transactions.slice(start, start + this.perPage);
+            },
+
+            nextPage() { if(this.page < this.totalPages) this.page++; },
+            prevPage() { if(this.page > 1) this.page--; },
+
+            updateClock() {
+                const now = new Date();
+                const hrs = now.getHours();
+                const min = now.getMinutes();
+                const sec = now.getSeconds();
+
+                // Analog Rotation Calculation
+                this.secondRotation = (sec * 6); 
+                this.minuteRotation = (min * 6) + (sec * 0.1); 
+                this.hourRotation = (hrs * 30) + (min * 0.5);
+
+                // Digital & Date Strings
+                this.liveTime = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                this.liveSeconds = `:${sec.toString().padStart(2, '0')}`;
+                this.liveDate = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+            },
+
+            async getTrans() {
+                try {
+                    const response = await fetch(this.url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ method: 'fetch', table: 'trans', params: [24] })
+                    });
+                    const res = await response.json();
+                    if (res && res.data) {
+                        let rawData = Array.isArray(res.data) ? res.data : [res.data];
+                        this.transactions = rawData.sort((a, b) => b.id - a.id);
+                        this.totalPages = Math.max(1, Math.ceil(this.transactions.length / this.perPage));
+                    }
+                } catch (err) { console.error('Data Sync Failure'); }
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
