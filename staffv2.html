@@ -107,23 +107,37 @@
                                     <span class="text-[9px] text-slate-400 font-mono uppercase tracking-tighter" x-text="item.outlet || item.Outlet"></span>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-center">
-                                <div class="relative inline-block text-left" x-data="{ openMenu: false }" @click.away="openMenu = false">
-                                    <button @click="openMenu = !openMenu" 
-                                            class="flex items-center gap-2 mx-auto px-3 py-1.5 rounded-lg bg-slate-900/50 border border-white/10 hover:border-blue-500/30 transition-all active:scale-95">
-                                        <span :class="(item.status || item.Status) === 'Aktif' ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'" 
-                                              class="w-1.5 h-1.5 rounded-full animate-pulse"></span>
-                                        <span class="text-[8px] font-black uppercase tracking-widest" 
-                                              :class="(item.status || item.Status) === 'Aktif' ? 'text-emerald-400' : 'text-red-400'" 
-                                              x-text="(item.status || item.Status) === 'Aktif' ? 'online' : 'offline'"></span>
-                                        <svg class="w-3 h-3 text-slate-600" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>
-                                    </button>
-                                    <div x-show="openMenu" x-cloak class="absolute left-1/2 -translate-x-1/2 mt-2 w-32 rounded-xl glass border border-white/10 shadow-2xl z-50 overflow-hidden">
-                                        <button @click="quickUpdate(item, 'status', 'Aktif'); openMenu = false" class="flex items-center w-full px-4 py-2 text-[9px] font-black uppercase tracking-widest text-emerald-400 hover:bg-emerald-500/10">Set Online</button>
-                                        <button @click="quickUpdate(item, 'status', 'non aktif'); openMenu = false" class="flex items-center w-full px-4 py-2 text-[9px] font-black uppercase tracking-widest text-red-400 hover:bg-red-500/10 border-t border-white/5">Set Offline</button>
-                                    </div>
-                                </div>
-                            </td>
+                       <td class="px-6 py-4 text-center">
+    <div class="relative inline-block text-left" x-data="{ openMenu: false }" @click.away="openMenu = false">
+        <button @click="openMenu = !openMenu" 
+                class="flex items-center gap-2 mx-auto px-3 py-1.5 rounded-lg bg-slate-900/50 border border-white/10 hover:border-blue-500/30 transition-all active:scale-95">
+            <span :class="(item.status || item.Status) === 'Aktif' ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'" 
+                    class="w-1.5 h-1.5 rounded-full animate-pulse"></span>
+            <span class="text-[8px] font-black uppercase tracking-widest" 
+                    :class="(item.status || item.Status) === 'Aktif' ? 'text-emerald-400' : 'text-red-400'" 
+                    x-text="(item.status || item.Status) === 'Aktif' ? 'online' : 'offline'"></span>
+            <svg class="w-3 h-3 text-slate-600" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>
+        </button>
+
+        <div x-show="openMenu" 
+             x-cloak 
+             x-transition 
+             class="absolute right-0 mt-2 w-32 rounded-xl glass border border-white/10 shadow-2xl z-[100] overflow-hidden"
+             style="top: 100%;"> 
+            <div class="bg-[#0f172a] shadow-2xl">
+                <button @click="quickUpdate(item, 'status', 'Aktif'); openMenu = false" 
+                        class="flex items-center w-full px-4 py-2 text-[9px] font-black uppercase tracking-widest text-emerald-400 hover:bg-emerald-500/10 transition-colors">
+                    Set Online
+                </button>
+                <button @click="quickUpdate(item, 'status', 'non aktif'); openMenu = false" 
+                        class="flex items-center w-full px-4 py-2 text-[9px] font-black uppercase tracking-widest text-red-400 hover:bg-red-500/10 border-t border-white/5 transition-colors">
+                    Set Offline
+                </button>
+            </div>
+        </div>
+    </div>
+</td>
+
                             <td class="px-6 py-4 text-right">
                                 <div class="flex justify-end gap-1 opacity-20 group-hover:opacity-100 transition-opacity">
                                     <button @click="openModal('edit', item)" class="p-2 hover:bg-blue-500/20 rounded-lg text-blue-400 transition-colors">
