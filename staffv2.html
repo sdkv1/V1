@@ -160,64 +160,69 @@
         </div>
     </div>
 
-    <div x-show="modalOpen" x-cloak class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md">
-        <div @click.away="modalOpen = false" class="glass w-full max-w-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden" x-transition:enter="duration-300 ease-out" x-transition:enter-start="opacity-0 scale-90">
-            <div class="p-6 border-b border-white/5 bg-slate-900/50 flex justify-between items-center">
-                <h3 class="text-xs font-black uppercase tracking-[0.4em] text-blue-400" x-text="editMode ? 'Modify Identity' : 'Mint New Personnel'"></h3>
-                <button @click="modalOpen = false" class="text-slate-500 hover:text-white text-2xl">&times;</button>
+    <    <div x-show="modalOpen" x-cloak 
+         class="fixed inset-0 z-[100] flex justify-center items-start pt-12 md:pt-20 p-4 bg-slate-950/90 backdrop-blur-md overflow-y-auto">
+        
+        <div @click.away="modalOpen = false" 
+             class="glass w-full max-w-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden mb-10" 
+             x-transition:enter="duration-200 ease-out" x-transition:enter-start="opacity-0 -translate-y-4 scale-95">
+            
+            <div class="px-5 py-4 border-b border-white/5 bg-slate-900/50 flex justify-between items-center">
+                <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400" x-text="editMode ? 'Modify Personnel' : 'New Registration'"></h3>
+                <button @click="modalOpen = false" class="text-slate-500 hover:text-white text-xl">&times;</button>
             </div>
             
-            <form @submit.prevent="commitStaff" class="p-8 space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form @submit.prevent="commitStaff" class="p-6 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="md:col-span-2">
-                        <label class="text-[8px] uppercase font-black text-slate-500 tracking-[0.2em] mb-2 block">Full Name</label>
-                        <input type="text" x-model="formData.nama" class="w-full px-5 py-4 rounded-2xl text-sm" placeholder="Ex: Hazwa Fattihana" required>
+                        <label class="text-[7px] uppercase font-black text-slate-500 mb-1 block tracking-widest">Full Name</label>
+                        <input type="text" x-model="formData.nama" class="w-full px-4 py-2.5 rounded-xl text-xs" placeholder="Name..." required>
                     </div>
                     
                     <div>
-                        <label class="text-[8px] uppercase font-black text-slate-500 tracking-[0.2em] mb-2 block">Position</label>
-                        <select x-model="formData.posisi" class="w-full px-5 py-4 rounded-2xl text-sm appearance-none cursor-pointer">
+                        <label class="text-[7px] uppercase font-black text-slate-500 mb-1 block tracking-widest">Position</label>
+                        <select x-model="formData.posisi" class="w-full px-4 py-2.5 rounded-xl text-xs cursor-pointer">
                             <option value="cs">CS</option>
                             <option value="teknisi">TEKNISI</option>
                             <option value="admin">ADMIN</option>
-                            <option value="lead">LEAD</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="text-[8px] uppercase font-black text-slate-500 tracking-[0.2em] mb-2 block">Shift Schedule</label>
-                        <select x-model="formData.shiff" class="w-full px-5 py-4 rounded-2xl text-sm appearance-none cursor-pointer">
-                            <option value="Pagi">Pagi (Morning)</option>
-                            <option value="Siang">Siang (Afternoon)</option>
+                        <label class="text-[7px] uppercase font-black text-slate-500 mb-1 block tracking-widest">Initial Shift</label>
+                        <select x-model="formData.shiff" class="w-full px-4 py-2.5 rounded-xl text-xs cursor-pointer">
+                            <option value="Pagi">Pagi</option>
+                            <option value="Siang">Siang</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="text-[8px] uppercase font-black text-slate-500 tracking-[0.2em] mb-2 block">Job Description</label>
-                        <input type="text" x-model="formData.job" class="w-full px-5 py-4 rounded-2xl text-sm" placeholder="Ex: Mesin / Software">
+                        <label class="text-[7px] uppercase font-black text-slate-500 mb-1 block tracking-widest">Job Desc</label>
+                        <input type="text" x-model="formData.job" class="w-full px-4 py-2.5 rounded-xl text-xs" placeholder="Ex: Mesin">
                     </div>
 
                     <div>
-                        <label class="text-[8px] uppercase font-black text-slate-500 tracking-[0.2em] mb-2 block">Current Status</label>
-                        <select x-model="formData.status" class="w-full px-5 py-4 rounded-2xl text-sm appearance-none cursor-pointer">
-                            <option value="Aktif">Aktif (Online)</option>
-                            <option value="Non Aktif">Non Aktif (Offline)</option>
+                        <label class="text-[7px] uppercase font-black text-slate-500 mb-1 block tracking-widest">Status</label>
+                        <select x-model="formData.status" class="w-full px-4 py-2.5 rounded-xl text-xs cursor-pointer">
+                            <option value="Aktif">Aktif</option>
+                            <option value="Non Aktif">Non Aktif</option>
                         </select>
                     </div>
 
                     <div class="md:col-span-2">
-                        <label class="text-[8px] uppercase font-black text-slate-500 tracking-[0.2em] mb-2 block">Outlet Assignment</label>
-                        <input type="text" x-model="formData.outlet" class="w-full px-5 py-4 rounded-2xl text-sm" placeholder="Ex: S01 TIMORITEL MADIUN">
+                        <label class="text-[7px] uppercase font-black text-slate-500 mb-1 block tracking-widest">Outlet Assignment</label>
+                        <input type="text" x-model="formData.outlet" class="w-full px-4 py-2.5 rounded-xl text-xs" placeholder="Outlet Name...">
                     </div>
                 </div>
 
-                <div class="pt-6 flex gap-4">
-                    <button type="button" @click="modalOpen = false" class="flex-1 px-4 py-4 rounded-2xl border border-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all text-slate-500">Abort</button>
-                    <button type="submit" class="flex-1 px-4 py-4 rounded-2xl bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 shadow-xl shadow-blue-600/40 transition-all active:scale-95" x-text="editMode ? 'Commit Sync' : 'Mint Personnel'"></button>
+                <div class="pt-4 flex gap-3">
+                    <button type="button" @click="modalOpen = false" class="flex-1 px-3 py-3 rounded-xl border border-white/5 text-[9px] font-black uppercase text-slate-500 hover:bg-white/5 transition-all">Abort</button>
+                    <button type="submit" class="flex-1 px-3 py-3 rounded-xl bg-blue-600 text-white text-[9px] font-black uppercase shadow-lg shadow-blue-600/20 active:scale-95 transition-all" x-text="editMode ? 'Update Node' : 'Mint Personnel'"></button>
                 </div>
             </form>
         </div>
     </div>
+
 </div>
 
 <script>
