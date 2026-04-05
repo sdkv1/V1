@@ -3,121 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NODE CHAIN - Staff Registry V3.2</title>
+    <title>Staff Node v1.1 - Status Optimized</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
     <style>
         [x-cloak] { display: none !important; }
         body { 
-            background-color: #020617; 
+            background-color: #0f172a; 
             color: #f8fafc; 
             font-family: 'Inter', sans-serif;
-            background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 80%);
-            overflow-x: hidden;
+            background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, #0f172a 80%);
         }
         .glass { 
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .neon-text { color: #3b82f6; text-shadow: 0 0 15px rgba(59, 130, 246, 0.6); }
-        .bg-grid { background-size: 20px 20px; background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px); }
-        
-        input, select { 
-            background: rgba(15, 23, 42, 0.9) !important; 
-            border: 1px solid rgba(255, 255, 255, 0.1) !important; 
-            color: #fff !important;
+        .neon-text { color: #22c55e; text-shadow: 0 0 10px rgba(34, 197, 94, 0.3); }
+        .input-dark {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
         }
-        /* Scrollbar Tipis */
-        .custom-scrollbar::-webkit-scrollbar { height: 4px; width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        /* Penting: Izinkan dropdown keluar dari baris tabel */
+        .no-cut { overflow: visible !important; }
     </style>
 </head>
-<body class="p-2 md:p-6 min-h-screen bg-grid" x-data="staffManager()" x-init="getStaff()">
+<body class="p-4 lg:p-8" x-data="staffManager()" x-init="getStaff()">
 
-<div class="max-w-[1100px] mx-auto w-full">
+<div class="max-w-[1200px] mx-auto w-full">
     
-    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-slate-900/40 p-6 rounded-2xl border border-white/5 shadow-2xl glass">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <div>
-            <h1 class="text-xl font-black tracking-[0.2em] uppercase italic neon-text">STAFF <span class="text-white">NODE</span></h1>
-            <div class="flex items-center gap-2 mt-1">
-                <span class="relative flex h-2 w-2">
-                    <span :class="loading ? 'animate-ping' : ''" class="absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                </span>
-                <p class="text-[9px] text-blue-400 font-mono uppercase tracking-[0.2em]" x-text="loading ? 'Syncing_Chain...' : 'Registry_System // Live'"></p>
-            </div>
+            <h2 class="text-2xl font-black neon-text uppercase tracking-tighter italic">STAFF <span class="text-white">NODE</span></h2>
+            <p class="text-[9px] text-slate-500 font-mono mt-1">> STATUS: <span class="text-green-400" x-text="loading ? 'SYNCING...' : 'LIVE_SYNCED'"></span></p>
         </div>
-
+        
         <div class="flex items-center gap-3">
-             <select x-model="rowsPerPage" @change="currentPage = 1" class="bg-slate-900/50 border border-white/10 rounded-xl px-3 py-2 text-[10px] font-black text-blue-400 outline-none cursor-pointer uppercase">
+            <select x-model="rowsPerPage" @change="currentPage = 1" class="bg-slate-800 border border-white/5 rounded-xl px-3 py-2 text-[10px] font-black text-green-400 uppercase outline-none">
                 <option value="10">10 Rows</option>
                 <option value="25">25 Rows</option>
             </select>
-            <button @click="openModal('add')" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20 active:scale-95">
-                + Mint New Staff
+            <button @click="openModal('add')" class="px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-black rounded-xl transition-all shadow-lg shadow-green-900/20 text-[10px] uppercase tracking-widest">
+                + Mint Personnel
             </button>
         </div>
     </div>
 
-    <div class="glass rounded-2xl shadow-2xl border border-white/10 relative">
-        <div class="overflow-x-auto custom-scrollbar">
-            <table class="w-full text-left border-collapse">
+    <div class="glass rounded-3xl shadow-2xl border border-white/10 relative no-cut">
+        <div class="overflow-x-auto no-cut">
+            <table class="w-full text-left border-collapse no-cut">
                 <thead>
-                    <tr class="bg-slate-900/80 text-slate-500 text-[8px] uppercase font-black tracking-widest border-b border-white/5">
-                        <th class="px-6 py-5">Personnel & Role</th>
-                        <th class="px-6 py-5">Assignment</th>
-                        <th class="px-6 py-5">Node / Outlet</th>
-                        <th class="px-6 py-5 text-center">Status</th>
-                        <th class="px-6 py-5 text-right">Actions</th>
+                    <tr class="bg-slate-800/80 text-slate-400 text-[9px] uppercase font-black tracking-widest border-b border-white/5">
+                        <th class="px-8 py-5">Personnel</th>
+                        <th class="px-8 py-5">Node Assignment</th>
+                        <th class="px-8 py-5 text-center">Current Status</th>
+                        <th class="px-8 py-5 text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
                     <template x-for="item in pagedStaffs" :key="item.id || item.Id">
-                        <tr class="hover:bg-blue-600/[0.04] transition-all group border-l-2 border-l-transparent hover:border-l-blue-500">
-                            <td class="px-6 py-4">
+                        <tr class="hover:bg-white/[0.03] transition-all no-cut">
+                            <td class="px-8 py-4">
                                 <div class="flex items-center gap-4">
-                                    <div class="w-10 h-10 rounded-xl bg-slate-800/40 border border-white/10 flex items-center justify-center group-hover:border-blue-500/50">
-                                        <span class="text-[10px] font-black text-blue-400" x-text="(item.nama || item.Nama || '??').substring(0, 2).toUpperCase()"></span>
+                                    <div class="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center border border-white/5 shadow-inner">
+                                        <span class="text-[10px] font-mono text-green-500 font-bold" x-text="(item.nama || item.Nama || '??').substring(0, 2).toUpperCase()"></span>
                                     </div>
-                                    <div class="flex flex-col">
-                                        <span class="font-bold text-slate-100 text-[13px]" x-text="item.nama || item.Nama"></span>
-                                        <span class="text-[8px] text-blue-400 font-black uppercase" x-text="item.posisi || item.Posisi"></span>
+                                    <div>
+                                        <div class="font-bold text-slate-100 text-sm" x-text="item.nama || item.Nama"></div>
+                                        <div class="text-[9px] text-slate-500 uppercase font-black tracking-tighter" x-text="item.posisi || item.Posisi"></div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4">
-                                <div class="flex flex-col">
-                                    <span class="text-[10px] text-slate-300" x-text="item.job || item.Job"></span>
-                                    <span :class="(item.shiff || item.Shiff) === 'Siang' ? 'text-orange-400' : 'text-indigo-400'" 
-                                          class="text-[9px] font-mono font-black" x-text="'Shift_' + (item.shiff || item.Shiff || 'Siang')"></span>
+                            <td class="px-8 py-4">
+                                <div class="text-slate-300 text-xs font-mono" x-text="item.outlet || item.Outlet"></div>
+                                <div class="text-[9px] text-blue-400 font-black uppercase mt-0.5" x-text="'Task: ' + (item.job || item.Job)"></div>
+                            </td>
+                            <td class="px-8 py-4 text-center">
+                                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/50 border border-white/5">
+                                    <span :class="(item.status || item.Status) === 'Aktif' ? 'bg-green-500 shadow-[0_0_8px_#22c55e]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'" 
+                                          class="w-1.5 h-1.5 rounded-full animate-pulse"></span>
+                                    <span class="text-[9px] font-black uppercase tracking-widest" 
+                                          :class="(item.status || item.Status) === 'Aktif' ? 'text-green-400' : 'text-red-400'" 
+                                          x-text="item.status || item.Status"></span>
                                 </div>
                             </td>
-                            <td class="px-6 py-4">
-                                <span class="text-[9px] text-slate-500 font-mono" x-text="item.outlet || item.Outlet"></span>
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                <div class="relative inline-block" x-data="{ sOpen: false }" @click.away="sOpen = false">
-                                    <button @click="sOpen = !sOpen" class="flex items-center gap-2 mx-auto px-3 py-1.5 rounded-lg bg-slate-900/50 border border-white/10 hover:border-blue-500/30 active:scale-95 transition-all">
-                                        <span :class="(item.status || item.Status) === 'Aktif' ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-red-500 shadow-[0_0_8px_#ef4444]'" class="w-1.5 h-1.5 rounded-full"></span>
-                                        <span class="text-[8px] font-black uppercase tracking-widest" :class="(item.status || item.Status) === 'Aktif' ? 'text-emerald-400' : 'text-red-400'" x-text="(item.status || item.Status) === 'Aktif' ? 'online' : 'offline'"></span>
-                                        <svg class="w-3 h-3 text-slate-600" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" /></svg>
+                            <td class="px-8 py-4 text-right no-cut">
+                                <div x-data="{ mOpen: false }" class="relative inline-block" @click.away="mOpen = false">
+                                    <button @click="mOpen = !mOpen" class="p-2 hover:bg-slate-700/50 rounded-xl transition-all border border-transparent hover:border-white/10">
+                                        <svg class="w-5 h-5 text-slate-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>
                                     </button>
-                                    <div x-show="sOpen" x-cloak class="absolute left-1/2 -translate-x-1/2 mt-2 w-32 bg-[#0f172a] border border-white/10 rounded-xl shadow-2xl z-[100] overflow-hidden">
-                                        <button @click="quickUpdate(item, 'status', 'Aktif'); sOpen = false" class="w-full text-left px-4 py-2.5 text-[9px] font-black uppercase text-emerald-400 hover:bg-emerald-400/10 transition-colors">Set Online</button>
-                                        <button @click="quickUpdate(item, 'status', 'non aktif'); sOpen = false" class="w-full text-left px-4 py-2.5 text-[9px] font-black uppercase text-red-400 hover:bg-red-400/10 border-t border-white/5 transition-colors">Set Offline</button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <div class="relative inline-block" x-data="{ mOpen: false }" @click.away="mOpen = false">
-                                    <button @click="mOpen = !mOpen" class="p-2 hover:bg-white/5 rounded-xl transition-all border border-transparent hover:border-white/10 group">
-                                        <svg class="w-4 h-4 text-slate-500 group-hover:text-blue-400" fill="currentColor" viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path></svg>
-                                    </button>
-                                    <div x-show="mOpen" x-cloak class="absolute right-0 mt-1 w-32 bg-[#0f172a] border border-white/20 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] z-[110] overflow-hidden">
-                                        <button @click="openModal('edit', item); mOpen = false" class="w-full text-left px-4 py-3 text-[10px] font-black text-blue-400 hover:bg-blue-400/10 border-b border-white/5 uppercase tracking-widest">Edit Node</button>
-                                        <button @click="deleteStaff(item.id || item.Id); mOpen = false" class="w-full text-left px-4 py-3 text-[10px] font-black text-red-500 hover:bg-red-500/10 uppercase tracking-widest">Burn Node</button>
+                                    
+                                    <div x-show="mOpen" x-cloak 
+                                         x-transition:enter="transition ease-out duration-100"
+                                         x-transition:enter-start="opacity-0 scale-95"
+                                         x-transition:enter-end="opacity-100 scale-100"
+                                         class="absolute right-0 top-full mt-2 w-36 bg-[#1e293b] border border-white/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.7)] z-[100] overflow-hidden">
+                                        
+                                        <div class="p-1 bg-slate-900/40">
+                                            <button @click="quickUpdate(item, 'status', 'Aktif'); mOpen = false" class="w-full text-left px-4 py-2 text-[9px] font-black text-green-400 hover:bg-green-400/10 rounded-xl uppercase transition-colors">Set Aktif</button>
+                                            <button @click="quickUpdate(item, 'status', 'non aktif'); mOpen = false" class="w-full text-left px-4 py-2 text-[9px] font-black text-red-400 hover:bg-red-400/10 rounded-xl uppercase transition-colors">Set Non Aktif</button>
+                                        </div>
+                                        
+                                        <div class="h-[1px] bg-white/5"></div>
+                                        
+                                        <button @click="openModal('edit', item); mOpen = false" class="w-full text-left px-4 py-3 text-[10px] font-black text-blue-400 hover:bg-blue-400/10 uppercase tracking-widest transition-colors">Edit Node</button>
+                                        <button @click="deleteStaff(item.id || item.Id); mOpen = false" class="w-full text-left px-4 py-3 text-[10px] font-black text-red-500 hover:bg-red-500/10 border-t border-white/5 uppercase tracking-widest transition-colors">Burn Node</button>
                                     </div>
                                 </div>
                             </td>
@@ -127,62 +119,58 @@
             </table>
         </div>
 
-        <div class="p-4 bg-slate-900/60 border-t border-white/5 flex justify-between items-center">
-            <span class="text-[9px] font-mono text-slate-500 uppercase tracking-widest" x-text="`Record ${startRange} - ${endRange} of ${staffs.length}`"></span>
+        <div class="px-8 py-5 border-t border-white/5 bg-slate-900/40 flex justify-between items-center rounded-b-3xl">
+            <div class="text-[9px] font-mono text-slate-500 uppercase font-black tracking-widest">
+                Showing <span class="text-green-500" x-text="startRange"></span> - <span class="text-green-500" x-text="endRange"></span> of <span class="text-white" x-text="staffs.length"></span>
+            </div>
             <div class="flex items-center gap-2">
-                <button @click="currentPage--" :disabled="currentPage === 1" class="px-4 py-2 bg-white/5 hover:bg-blue-600/20 disabled:opacity-0 rounded-xl border border-white/10 text-[9px] font-black uppercase transition-all">Prev</button>
-                <div class="px-3 font-mono text-[10px] font-black text-blue-400" x-text="currentPage"></div>
-                <button @click="currentPage++" :disabled="currentPage === totalPages" class="px-4 py-2 bg-white/5 hover:bg-blue-600/20 disabled:opacity-0 rounded-xl border border-white/10 text-[9px] font-black uppercase transition-all">Next</button>
+                <button @click="currentPage--" :disabled="currentPage === 1" class="px-4 py-2 bg-slate-800 rounded-xl border border-slate-700 disabled:opacity-20 text-[9px] font-black uppercase">Prev</button>
+                <div class="px-3 font-mono text-xs text-green-400" x-text="currentPage"></div>
+                <button @click="currentPage++" :disabled="currentPage === totalPages" class="px-4 py-2 bg-slate-800 rounded-xl border border-slate-700 disabled:opacity-20 text-[9px] font-black uppercase">Next</button>
             </div>
         </div>
     </div>
 
-    <div x-show="showModal" x-cloak class="fixed inset-0 z-[200] flex justify-center items-start pt-12 p-4 bg-slate-950/90 backdrop-blur-md overflow-y-auto">
-        <div @click.away="showModal = false" class="glass w-full max-w-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden mb-10" x-transition>
-            <div class="px-5 py-4 border-b border-white/5 bg-slate-900/50 flex justify-between items-center">
-                <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400" x-text="mode === 'edit' ? 'Modify Personnel' : 'New Registration'"></h3>
+    <div x-show="showModal" x-cloak class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md" x-transition>
+        <div class="glass w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-white/10" @click.away="showModal = false">
+            <div class="p-6 border-b border-white/5 bg-slate-900/50 flex justify-between items-center">
+                <h3 class="text-[10px] font-black text-green-400 uppercase tracking-[0.3em]" x-text="mode === 'edit' ? 'MODIFY_NODE' : 'MINT_NEW_NODE'"></h3>
                 <button @click="showModal = false" class="text-slate-500 hover:text-white text-xl">&times;</button>
             </div>
             <form @submit.prevent="saveStaff" class="p-6 space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="md:col-span-2">
-                        <label class="text-[7px] uppercase font-black text-slate-500 mb-1 block">Full Name</label>
-                        <input type="text" x-model="form.nama" class="w-full px-4 py-2.5 rounded-xl text-xs" required>
-                    </div>
+                <div>
+                    <label class="text-[8px] uppercase font-black text-slate-500 mb-1 block">Personnel Name</label>
+                    <input type="text" x-model="form.nama" required class="w-full input-dark rounded-xl px-4 py-2.5 text-sm font-bold outline-none focus:border-green-500/50 transition-all">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="text-[7px] uppercase font-black text-slate-500 mb-1 block">Position</label>
-                        <select x-model="form.posisi" class="w-full px-4 py-2.5 rounded-xl text-xs">
+                        <label class="text-[8px] uppercase font-black text-slate-500 mb-1 block">Role</label>
+                        <select x-model="form.posisi" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold uppercase outline-none cursor-pointer">
                             <option value="Teknisi">Teknisi</option>
                             <option value="Admin">Admin</option>
                             <option value="Frontliner">CS</option>
+                            <option value="Kepala Cabang">KACAB</option>
                         </select>
                     </div>
                     <div>
-                        <label class="text-[7px] uppercase font-black text-slate-500 mb-1 block">Shift</label>
-                        <select x-model="form.shiff" class="w-full px-4 py-2.5 rounded-xl text-xs">
-                            <option value="Pagi">Pagi</option>
-                            <option value="Siang">Siang</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-[7px] uppercase font-black text-slate-500 mb-1 block">Status</label>
-                        <select x-model="form.status" class="w-full px-4 py-2.5 rounded-xl text-xs">
+                        <label class="text-[8px] uppercase font-black text-slate-500 mb-1 block">Status</label>
+                        <select x-model="form.status" class="w-full input-dark rounded-xl px-3 py-2 text-xs font-bold uppercase outline-none cursor-pointer">
                             <option value="Aktif">Aktif</option>
                             <option value="non aktif">Non Aktif</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="text-[7px] uppercase font-black text-slate-500 mb-1 block">Job Desc</label>
-                        <input type="text" x-model="form.job" class="w-full px-4 py-2.5 rounded-xl text-xs">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="text-[7px] uppercase font-black text-slate-500 mb-1 block">Outlet Assignment</label>
-                        <input type="text" x-model="form.outlet" class="w-full px-4 py-2.5 rounded-xl text-xs" required>
-                    </div>
                 </div>
-                <div class="pt-4 flex gap-3">
+                <div>
+                    <label class="text-[8px] uppercase font-black text-slate-500 mb-1 block">Outlet Assignment</label>
+                    <input type="text" x-model="form.outlet" required class="w-full input-dark rounded-xl px-4 py-2.5 text-sm font-bold outline-none">
+                </div>
+                <div>
+                    <label class="text-[8px] uppercase font-black text-slate-500 mb-1 block">Specialization</label>
+                    <input type="text" x-model="form.job" class="w-full input-dark rounded-xl px-4 py-2.5 text-sm font-bold outline-none">
+                </div>
+                <div class="flex gap-3 pt-4">
                     <button type="button" @click="showModal = false" class="flex-1 px-3 py-3 rounded-xl border border-white/5 text-[9px] font-black uppercase text-slate-500">Abort</button>
-                    <button type="submit" class="flex-1 px-3 py-3 rounded-xl bg-blue-600 text-white text-[9px] font-black uppercase" x-text="mode === 'edit' ? 'Update Node' : 'Mint Personnel'"></button>
+                    <button type="submit" class="flex-1 px-3 py-3 rounded-xl bg-green-600 text-white text-[9px] font-black uppercase shadow-lg shadow-green-900/40" x-text="loading ? 'Processing...' : (mode === 'edit' ? 'Update Node' : 'Mint Personnel')"></button>
                 </div>
             </form>
         </div>
@@ -194,7 +182,7 @@
         return {
             url: 'https://job.hitungnota.com/api',
             loading: false, showModal: false, mode: 'add', staffs: [], currentPage: 1, rowsPerPage: 10,
-            form: { Id: '', nama: '', outlet: 'S01 TIMORITEL MADIUN', posisi: 'Teknisi', status: 'Aktif', job: 'Mesin', shiff: 'Siang' },
+            form: { Id: '', nama: '', outlet: 'S01 TIMORITEL MADIUN', posisi: 'Teknisi', status: 'Aktif', job: 'Mesin' },
 
             get pagedStaffs() {
                 const start = (this.currentPage - 1) * this.rowsPerPage;
@@ -213,9 +201,7 @@
                         body: JSON.stringify(payload)
                     });
                     return await response.json();
-                } catch (err) {
-                    return null;
-                } finally { this.loading = false; }
+                } catch (err) { return null; } finally { this.loading = false; }
             },
 
             async getStaff() {
@@ -227,7 +213,7 @@
 
             async quickUpdate(item, field, value) {
                 const id = item.id || item.Id;
-                const updatedData = { ...item, [field]: value, id: id };
+                const updatedData = { ...item, [field]: value, id: id, shiff: 'Siang' };
                 const res = await this.call({ method: 'path', table: 'staff', params: [updatedData] });
                 if (res) {
                     const idx = this.staffs.findIndex(s => (s.id || s.Id) == id);
@@ -244,16 +230,15 @@
                     this.form = {
                         Id: item.id || item.Id, nama: item.nama || item.Nama,
                         outlet: item.outlet || item.Outlet, posisi: item.posisi || item.Posisi,
-                        status: item.status || item.Status, job: item.job || item.Job,
-                        shiff: item.shiff || item.Shiff || 'Siang'
+                        status: item.status || item.Status, job: item.job || item.Job
                     };
                 } else {
-                    this.form = { Id: '', nama: '', outlet: 'S01 TIMORITEL MADIUN', posisi: 'Teknisi', status: 'Aktif', job: 'Mesin', shiff: 'Siang' };
+                    this.form = { Id: '', nama: '', outlet: 'S01 TIMORITEL MADIUN', posisi: 'Teknisi', status: 'Aktif', job: 'Mesin' };
                 }
             },
 
             async saveStaff() {
-                const payload = { ...this.form, id: this.form.Id || 0 };
+                const payload = { ...this.form, id: this.form.Id || 0, shiff: 'Siang' };
                 const res = await this.call({ method: 'path', table: 'staff', params: [payload] });
                 if (res) {
                     await this.getStaff();
@@ -262,7 +247,7 @@
             },
 
             async deleteStaff(id) {
-                if (!confirm('Burn record ini dari chain?')) return;
+                if (!confirm('Hapus node ini dari sistem?')) return;
                 const res = await this.call({ method: 'delete', table: 'staff', params: [id] });
                 if (res) await this.getStaff();
             }
