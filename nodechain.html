@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NODE CHAIN - Live Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] { display: none !important; }
+        body { 
+            background-color: #020617; 
+            color: #f8fafc; 
+            font-family: 'Inter', sans-serif;
+            background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 80%);
+            overflow-x: hidden;
+        }
+        .glass { 
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .neon-text { color: #3b82f6; text-shadow: 0 0 15px rgba(59, 130, 246, 0.6); }
+        .font-mono { font-family: 'Fira Code', monospace; }
+        .bg-grid { background-size: 20px 20px; background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px); }
+    </style>
+</head>
+<body class="p-2 md:p-4 min-h-screen bg-grid">
+
+<div class="max-w-[1000px] mx-auto w-full" x-data="nodeChain()" x-init="init()">
+    
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 bg-slate-900/40 p-5 rounded-2xl border border-white/5 shadow-2xl glass">
+        <div class="text-center md:text-left">
+            <h1 class="text-xl font-black tracking-[0.2em] uppercase italic neon-text">NODE <span class="text-white">CHAIN</span></h1>
+            <div class="flex items-center gap-2 mt-1 justify-center md:justify-start">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <p class="text-[9px] text-emerald-400 font-mono uppercase tracking-[0.2em]">System_Online // Live_Sync</p>
+            </div>
+        </div>
+
+        <div class="bg-slate-950/80 px-8 py-3 rounded-2xl border border-blue-500/20 shadow-inner">
+            <p class="text-[7px] text-blue-500 font-black uppercase tracking-[0.4em] text-center mb-1">Central System Time</p>
+            <h2 class="text-3xl font-mono font-black tracking-widest text-white" x-text="liveTime">00:00:00</h2>
+        </div>
+        
+        <div class="hidden lg:block text-right">
+            <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Page_Status</p>
+            <p class="text-[10px] font-mono text-blue-400 font-bold uppercase tracking-tighter" x-text="`Page ${page} / ${totalPages}`"></p>
+        </div>
+    </div>
+
+    <div class="glass rounded-2xl shadow-2xl border border-white/10 overflow-hidden relative">
+        <div class="absolute top-0 left-0 h-[1px] bg-blue-500 transition-all duration-1000 ease-linear" :style="'width: ' + pulseWidth + '%'"></div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-900/80 text-slate-500 text-[8px] uppercase font-black tracking-widest border-b border-white/5">
+                        <th class="px-6 py-4 w-1/3">Reference (Antrian/ID)</th>
+                        <th class="px-6 py-4">Transaction (Invoice/Tanggal)</th>
+                        <th class="px-6 py-4 text-right">Origin</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5">
+                    <template x-for="trans in pagedTransactions()" :key="trans.id">
+                        <tr class="hover:bg-blue-600/[0.07] transition-all group border-l-2 border-l-transparent hover:border-l-blue-500">
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_5px_#3b82f6]"></div>
+                                        <span class="text-[11px] font-mono font-black text-blue-400 tracking-[0.1em]" x-text="trans.nomor_antrian"></span>
+                                    </div>
+                                    <span class="text-[8px] text-slate-600 font-mono uppercase tracking-widest ml-3.5" x-text="'SYS_ID: ' + trans.id"></span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex flex-col gap-0.5">
+                                    <span class="font-bold text-slate-100 text-[12px] font-mono tracking-tight group-hover:text-white" x-text="trans.invoice_service"></span>
+                                    <span class="text-slate-500 font-mono text-[9px]" x-text="trans.tanggal_antrian"></span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="inline-block bg-blue-500/10 px-2.5 py-1 rounded border border-blue-500/20">
+                                    <span class="text-[9px] text-blue-300 font-black uppercase tracking-tighter" x-text="'NODE_' + trans.id_cabang_erzap"></span>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="p-4 bg-slate-900/40 border-t border-white/5 flex justify-between items-center">
+            <span class="text-[9px] font-mono text-slate-500 uppercase tracking-widest" x-text="`Total_Pool: ${transactions.length}`"></span>
+            <div class="flex gap-2">
+                <button @click="prevPage()" :disabled="page === 1" class="px-4 py-1.5 bg-white/5 hover:bg-blue-600/20 disabled:opacity-10 rounded-lg border border-white/10 text-[9px] font-black uppercase tracking-widest transition-all">Prev</button>
+                <button @click="nextPage()" :disabled="page >= totalPages" class="px-4 py-1.5 bg-white/5 hover:bg-blue-600/20 disabled:opacity-10 rounded-lg border border-white/10 text-[9px] font-black uppercase tracking-widest transition-all">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 flex justify-between items-center px-2 opacity-30 font-mono text-[8px]">
+        <p class="uppercase tracking-[0.5em]">NodeChain_v1.2.5_Stable</p>
+        <div class="flex gap-4">
+            <span>SYNC: 1HZ</span>
+            <span x-text="`LIMIT: ${perPage}_PER_PAGE` "></span>
+        </div>
+    </div>
+</div>
+
+<script>
+    function nodeChain() {
+        return {
+            url: 'https://job.hitungnota.com/api',
+            transactions: [],
+            liveTime: '00:00:00',
+            pulseWidth: 0,
+            
+            // Paging Settings
+            page: 1,
+            perPage: 10, // <--- Ubah jumlah data per halaman di sini
+            totalPages: 1,
+
+            init() {
+                this.updateClock();
+                setInterval(() => this.updateClock(), 1000);
+                
+                this.getTrans();
+                setInterval(() => {
+                    this.getTrans();
+                    this.pulseWidth = 0;
+                    setTimeout(() => this.pulseWidth = 100, 50);
+                }, 1000);
+            },
+
+            pagedTransactions() {
+                const start = (this.page - 1) * this.perPage;
+                return this.transactions.slice(start, start + this.perPage);
+            },
+
+            nextPage() { if(this.page < this.totalPages) this.page++; },
+            prevPage() { if(this.page > 1) this.page--; },
+
+            updateClock() {
+                this.liveTime = new Date().toLocaleTimeString('en-GB', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            },
+
+            async getTrans() {
+                try {
+                    const response = await fetch(this.url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ method: 'fetch', table: 'trans', params: [24] })
+                    });
+                    const res = await response.json();
+                    if (res && res.data) {
+                        let rawData = Array.isArray(res.data) ? res.data : [res.data];
+                        
+                        // Sorting: Terbaru (ID terbesar) di atas
+                        this.transactions = rawData.sort((a, b) => b.id - a.id);
+                        
+                        // Update total paging
+                        this.totalPages = Math.max(1, Math.ceil(this.transactions.length / this.perPage));
+                    }
+                } catch (err) { console.error('Sync error'); }
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
