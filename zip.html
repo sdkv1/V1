@@ -41,8 +41,8 @@
         </div>
         
         <div class="hidden lg:block text-right">
-            <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Sort_Mode</p>
-            <p class="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-tighter italic">Latest_On_Top</p>
+            <p class="text-[8px] text-slate-500 font-black uppercase tracking-widest">Page_Status</p>
+            <p class="text-[10px] font-mono text-emerald-400 font-bold uppercase tracking-tighter" x-text="`Page ${page} of ${totalPages}`"></p>
         </div>
     </div>
 
@@ -59,9 +59,8 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
-                    <template x-for="trans in transactions" :key="trans.id">
+                    <template x-for="trans in pagedTransactions()" :key="trans.id">
                         <tr class="hover:bg-blue-600/[0.07] transition-all group border-l-2 border-l-transparent hover:border-l-blue-500">
-                            
                             <td class="px-6 py-4">
                                 <div class="flex flex-col gap-1">
                                     <div class="flex items-center gap-2">
@@ -71,19 +70,14 @@
                                     <span class="text-[8px] text-slate-600 font-mono uppercase tracking-widest ml-3.5" x-text="'SYS_ID: ' + trans.id"></span>
                                 </div>
                             </td>
-
                             <td class="px-6 py-4">
                                 <div class="flex flex-col gap-0.5">
                                     <span class="font-bold text-slate-100 text-[12px] font-mono tracking-tight group-hover:text-white" x-text="trans.invoice_service"></span>
-                                    <div class="flex items-center gap-2 text-slate-500 font-mono text-[9px]">
-                                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                        <span x-text="trans.tanggal_antrian"></span>
-                                    </div>
+                                    <span class="text-slate-500 font-mono text-[9px]" x-text="trans.tanggal_antrian"></span>
                                 </div>
                             </td>
-
                             <td class="px-6 py-4 text-right">
-                                <div class="inline-block bg-blue-500/10 px-2.5 py-1 rounded border border-blue-500/20 group-hover:border-blue-500/50 transition-all">
+                                <div class="inline-block bg-blue-500/10 px-2.5 py-1 rounded border border-blue-500/20">
                                     <span class="text-[9px] text-blue-300 font-black uppercase tracking-tighter" x-text="'NODE_' + trans.id_cabang_erzap"></span>
                                 </div>
                             </td>
@@ -92,13 +86,13 @@
                 </tbody>
             </table>
         </div>
-    </div>
 
-    <div class="mt-4 flex justify-between items-center px-2 opacity-30 font-mono text-[8px]">
-        <p class="uppercase tracking-[0.5em]">NodeChain_v1.2.0_Pahing_Release</p>
-        <div class="flex gap-4">
-            <span>SYNC_RATE: 1HZ</span>
-            <span>POOL: 24</span>
+        <div class="p-4 bg-slate-900/20 border-t border-white/5 flex justify-between items-center">
+            <span class="text-[10px] font-mono text-slate-500" x-text="`TOTAL: ${transactions.length} ITEMS` "></span>
+            <div class="flex gap-2">
+                <button @click="prevPage()" :disabled="page === 1" class="px-3 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-20 rounded border border-white/10 text-[10px] font-bold uppercase transition-all">Prev</button>
+                <button @click="nextPage()" :disabled="page >= totalPages" class="px-3 py-1 bg-white/5 hover:bg-white/10 disabled:opacity-20 rounded border border-white/10 text-[10px] font-bold uppercase transition-all">Next</button>
+            </div>
         </div>
     </div>
 </div>
@@ -111,6 +105,11 @@
             liveTime: '00:00:00',
             pasaran: '',
             pulseWidth: 0,
+            
+            // Paging State
+            page: 1,
+            perPage: 10,
+            totalPages: 1,
 
             init() {
                 this.updateClock();
@@ -125,17 +124,23 @@
                 }, 1000);
             },
 
+            // Fungsi ambil data halaman tertentu
+            pagedTransactions() {
+                const start = (this.page - 1) * this.perPage;
+                const end = start + this.perPage;
+                return this.transactions.slice(start, end);
+            },
+
+            nextPage() { if(this.page < this.totalPages) this.page++; },
+            prevPage() { if(this.page > 1) this.page--; },
+
             updateClock() {
                 this.liveTime = new Date().toLocaleTimeString('en-GB', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
             },
 
             calculatePasaran() {
                 const pasar = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
-                // Baseline: 1 Januari 1970 adalah Kamis Wage
-                // Index Wage di array pasar adalah 3.
-                const startMillis = new Date("1970-01-01").getTime();
-                const nowMillis = new Date().getTime();
-                const diffDays = Math.floor((nowMillis - startMillis) / (1000 * 60 * 60 * 24));
+                const diffDays = Math.floor((new Date().getTime() - new Date("1970-01-01").getTime()) / (1000 * 60 * 60 * 24));
                 this.pasaran = pasar[(diffDays + 3) % 5];
             },
 
@@ -150,8 +155,11 @@
                     if (res && res.data) {
                         let rawData = Array.isArray(res.data) ? res.data : [res.data];
                         
-                        // SORTING: Data terbaru (ID terbesar) berada di atas
+                        // Urutkan terbaru di atas
                         this.transactions = rawData.sort((a, b) => b.id - a.id);
+                        
+                        // Update total pages
+                        this.totalPages = Math.ceil(this.transactions.length / this.perPage);
                     }
                 } catch (err) { console.error('Sync error'); }
             }
